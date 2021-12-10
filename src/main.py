@@ -10,7 +10,7 @@ from evAssembler import evAssembler
 from evLexer import evLexer
 from evParser import evParser
 
-# from ev_cmd import EvCmdType
+from ev_argtype import EvArgType
 
 def jsonDumpUnity(tree, ofpath):
     with open(ofpath, "w") as ofobj:
@@ -25,7 +25,7 @@ def convertToUnity(scripts, strList):
         for cmd in script:
             scriptArgs = [
                 {
-                    "argType" : 0, # Should use enum here instead
+                    "argType" : EvArgType.CmdType,
                     "data" : cmd.cmdType.value
                 }
             ]

@@ -1,6 +1,8 @@
+import struct
 from dataclasses import dataclass
 
 from antlr4 import *
+from UnityPy.streams import EndianBinaryReader, EndianBinaryWriter
 
 from ev_argtype import EvArgType
 if __name__ is not None and "." in __name__:
@@ -21,11 +23,17 @@ class EvCmd:
     cmdType: EvCmdType
     args: list
 
+def encode_float(var):
+    var = float(var)
+    data = int(struct.unpack('<i', struct.pack('<f', var))[0])
+    return data
+
 class evAssembler(evListener):
     currentLabel = None
     scripts = {}
     strTbl = []
     currCmdIdx = -1
+    writer = EndianBinaryWriter()
 
     def enterLabel(self, ctx:evParser.LabelContext):
         lbl = ctx.getChild(0)
@@ -48,7 +56,11 @@ class evAssembler(evListener):
 
     def enterNumber(self, ctx: evParser.NumberContext):
         # Note this probably won't always work this well
-        argVal = int(str(ctx.getChild(0)))
+        argVal = encode_float(float(str(ctx.getChild(0))))
+        try:
+            self.writer.write_int(argVal)
+        except Exception as exc:
+            print("Invalid float: {}".format(argVal))
         # Defaulting to argType 1 since that is passing by value
         # but that just simply isn't true for most of these
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
@@ -58,6 +70,7 @@ class evAssembler(evListener):
     def enterWork(self, ctx: evParser.WorkContext):
         # Note this probably won't always work this well
         argVal = int(str(ctx.getChild(0))[1:])
+
         # Defaulting to argType 1 since that is passing by value
         # but that just simply isn't true for most of these
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
