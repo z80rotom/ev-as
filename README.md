@@ -1,10 +1,19 @@
 # ev-as
 Assembler for EvScripts from Pokemon BDSP
 
-# Usage
+# ev-as Usage
 Takes an EvScript (.ev) file and assembles it and repacks it into the Unity ev_script bundle.
 
-Example: src/main.py -i d05r0114.ev -o Dpr/ev_scripts -s d05r0114
+Example: src/ev_as.py -i d05r0114.ev -o Dpr/ev_scripts -s d05r0114
+
+# ev-parse
+Parser for EvScripts from Pokemon BDSP
+
+# ev-parse Usage
+Takes an ev_script file and extracts and parses all of the individual script files
+
+Example:
+src/main.py -i \<INPUT FILE\> -o \<OUTPUT DIR\>
 
 # EvScript
 EvScript refers to scripts with an assembly-like syntax that use EvCmd's as defined by BDSP. All currently known EvCmd's can be found in ev_cmd.csv, and examples for EvScripts can be found in the examples directly.
