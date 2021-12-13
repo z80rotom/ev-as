@@ -13,6 +13,10 @@ else:
 from evListener import evListener
 from ev_cmd import EvCmdType
 
+MAX_WORK = 500
+MAX_FLAG = 4000
+MAX_SYS_FLAG = 1000
+
 @dataclass
 class EvArg:
     argType: int
@@ -77,6 +81,9 @@ class evAssembler(evListener):
             EvArg(EvArgType.Work, argVal)
         )
 
+        if argVal > MAX_WORK:
+            print("[Warning] line {}:{} Invalid work: @{}".format(ctx.start.line, ctx.start.column, argVal))
+
     def enterFlag(self, ctx: evParser.FlagContext):
         # Note this probably won't always work this well
         argVal = int(str(ctx.getChild(0))[1:])
@@ -86,6 +93,9 @@ class evAssembler(evListener):
             EvArg(EvArgType.Flag, argVal)
         )
     
+        if argVal > MAX_FLAG:
+            print("[Warning] line {}:{} Invalid Flag: #{}".format(ctx.start.line, ctx.start.column, argVal))
+
     def enterSysFlag(self, ctx: evParser.SysFlagContext):
         # Note this probably won't always work this well
         argVal = int(str(ctx.getChild(0))[1:])
@@ -102,4 +112,7 @@ class evAssembler(evListener):
         argVal = self.strTbl.index(strVal)
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
             EvArg(EvArgType.String, argVal)
-        )
+        )    
+
+        if argVal > MAX_SYS_FLAG:
+            print("[Warning] line {}:{} Invalid System Flag: ${}".format(ctx.start.line, ctx.start.column, argVal))
