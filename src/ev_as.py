@@ -11,30 +11,47 @@ from evLexer import evLexer
 from evParser import evParser
 
 from ev_argtype import EvArgType
+from function_definitions import FunctionDefinition
 
 def jsonDumpUnity(tree, ofpath):
     with open(ofpath, "w") as ofobj:
         json.dump(tree, ofobj, indent=4)
 
 def convertToUnity(scripts, strList):
+    FunctionDefinition.load("ev_scripts.json")
     tree = {}
     treeScripts = []
 
     for label, script in scripts.items():
         scriptCommands = []
         for cmd in script:
+            evCmdType = cmd.cmdType
+            funcDef = FunctionDefinition.getFunctionDefinition(evCmdType)
             scriptArgs = [
                 {
                     "argType" : EvArgType.CmdType,
-                    "data" : cmd.cmdType.value
+                    "data" : evCmdType.value
                 }
             ]
 
-            for arg in cmd.args:
+            reqArgs = funcDef.noReqArgs()
+            # if len(cmd.args) < reqArgs:
+            #     print("[Warning] {}:{} Too few arguments passed in. At least {} required. {} provided.".format(cmd.line, cmd.column, reqArgs, len(cmd.args)))
+            # noMaxArgs = funcDef.maxArgs()
+            # if len(cmd.args) > noMaxArgs:
+            #     print("[Warning] {}:{}  Too many arguments passed in. At most {} allowed. {} provided.".format(cmd.line, cmd.column, noMaxArgs, len(cmd.args)))
+            
+            for i, arg in enumerate(cmd.args):
+                argDef = funcDef.validArgs[i]
+                if arg.argType not in argDef.validArgTypes:
+                    print("[Warning] {}:{} invalid argument".format(arg.line, arg.column))
+                
+
                 scriptArgs.append({
                     "argType" : arg.argType,
                     "data" : arg.data
                 })
+            
             scriptCommands.append({
                 "Arg" : scriptArgs
             })

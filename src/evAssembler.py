@@ -21,11 +21,15 @@ MAX_SYS_FLAG = 1000
 class EvArg:
     argType: int
     data: int
+    line: int
+    column: int
 
 @dataclass
 class EvCmd:
     cmdType: EvCmdType
     args: list
+    line: int
+    column: int
 
 def encode_float(var):
     var = float(var)
@@ -33,15 +37,20 @@ def encode_float(var):
     return data
 
 class evAssembler(evListener):
-    currentLabel = None
-    scripts = {}
-    strTbl = []
-    currCmdIdx = -1
-    writer = EndianBinaryWriter()
+    def __init__(self):
+        self.currentLabel = None
+        self.scripts = {}
+        self.strTbl = []
+        self.currCmdIdx = -1
+        self.writer = EndianBinaryWriter()
 
-    def enterLabel(self, ctx:evParser.LabelContext):
+    def enterLbl(self, ctx: evParser.LblContext):
         lbl = ctx.getChild(0)
-        lblName = str(lbl.getChild(0))
+        # If someone can get the grammar working a bit better
+        # then this replace can go away, but I can't get the :
+        # in the right rule not to do this without making labels
+        # unable to start with _
+        lblName = str(lbl).replace(':', '')
         self.currentLabel = lblName
         self.scripts[self.currentLabel] = []
         self.currCmdIdx = -1
@@ -50,11 +59,11 @@ class evAssembler(evListener):
         name = str(ctx.getChild(0))
         if not hasattr(EvCmdType, name):
             # NOTE: should probably be an error
-            print("Invalid EvCmd")
+            print("Invalid EvCmd: {}".format(name))
             return
         evCmdType = getattr(EvCmdType, name)
         args = []
-        evCmd = EvCmd(evCmdType, args)
+        evCmd = EvCmd(evCmdType, args, ctx.start.line, ctx.start.column)
         self.scripts[self.currentLabel].append(evCmd)
         self.currCmdIdx += 1
 
@@ -68,7 +77,7 @@ class evAssembler(evListener):
         # Defaulting to argType 1 since that is passing by value
         # but that just simply isn't true for most of these
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
-            EvArg(EvArgType.Value, argVal)
+            EvArg(EvArgType.Value, argVal, ctx.start.line, ctx.start.column)
         )
     
     def enterWork(self, ctx: evParser.WorkContext):
@@ -78,7 +87,7 @@ class evAssembler(evListener):
         # Defaulting to argType 1 since that is passing by value
         # but that just simply isn't true for most of these
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
-            EvArg(EvArgType.Work, argVal)
+            EvArg(EvArgType.Work, argVal, ctx.start.line, ctx.start.column)
         )
 
         if argVal > MAX_WORK:
@@ -90,7 +99,7 @@ class evAssembler(evListener):
         # Defaulting to argType 1 since that is passing by value
         # but that just simply isn't true for most of these
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
-            EvArg(EvArgType.Flag, argVal)
+            EvArg(EvArgType.Flag, argVal, ctx.start.line, ctx.start.column)
         )
     
         if argVal > MAX_FLAG:
@@ -102,7 +111,7 @@ class evAssembler(evListener):
         # Defaulting to argType 1 since that is passing by value
         # but that just simply isn't true for most of these
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
-            EvArg(EvArgType.SysFlag, argVal)
+            EvArg(EvArgType.SysFlag, argVal, ctx.start.line, ctx.start.column)
         )
     
     def enterString_(self, ctx: evParser.String_Context):
@@ -111,7 +120,7 @@ class evAssembler(evListener):
             self.strTbl.append(strVal)
         argVal = self.strTbl.index(strVal)
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
-            EvArg(EvArgType.String, argVal)
+            EvArg(EvArgType.String, argVal, ctx.start.line, ctx.start.column)
         )    
 
         if argVal > MAX_SYS_FLAG:

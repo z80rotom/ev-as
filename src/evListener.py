@@ -62,15 +62,6 @@ class evListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by evParser#label.
-    def enterLabel(self, ctx:evParser.LabelContext):
-        pass
-
-    # Exit a parse tree produced by evParser#label.
-    def exitLabel(self, ctx:evParser.LabelContext):
-        pass
-
-
     # Enter a parse tree produced by evParser#argument.
     def enterArgument(self, ctx:evParser.ArgumentContext):
         pass
@@ -86,15 +77,6 @@ class evListener(ParseTreeListener):
 
     # Exit a parse tree produced by evParser#string_.
     def exitString_(self, ctx:evParser.String_Context):
-        pass
-
-
-    # Enter a parse tree produced by evParser#name.
-    def enterName(self, ctx:evParser.NameContext):
-        pass
-
-    # Exit a parse tree produced by evParser#name.
-    def exitName(self, ctx:evParser.NameContext):
         pass
 
 
