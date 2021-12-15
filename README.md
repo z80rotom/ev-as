@@ -13,7 +13,10 @@ Parser for EvScripts from Pokemon BDSP
 Takes an ev_script file and extracts and parses all of the individual script files
 
 Example:
-src/main.py -i \<INPUT FILE\> -o \<OUTPUT DIR\>
+src/ev_parse.py -i Dpr/ev_script
+
+# Tool Setup
+pip install -r requirements.txt
 
 # EvScript
 EvScript refers to scripts with an assembly-like syntax that use EvCmd's as defined by BDSP. All currently known EvCmd's can be found in ev_cmd.csv, and examples for EvScripts can be found in the examples directly.
