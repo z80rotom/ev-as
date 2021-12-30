@@ -1,10 +1,10 @@
 ev_z80r0101_obj00:
-    _TALKMSG('dp_scenario2%00-some-locale-label') ; Referencing a message defined in Messages/english 
+	_TALKMSG('dp_scenario2%00-some-locale-label') ; Referencing a message defined in Messages/english 
 	_LAST_KEYWAIT()
-    _TALK_END()
-    _END()
+	_TALK_END()
+	_END()
 ev_z80r0101_obj01:
-    _ADD_POKEMON(181, 50, 0, @247) ; Gives you a level 50 ampharos with no item and stores some data in Work 247
+	_ADD_POKEMON(181, 50, 0, @247) ; Gives you a level 50 ampharos with no item and stores some data in Work 247
 	_GET_POKETCH()
 	_LDVAL(@53, 2) ; Loads value into work
 	_POKETCH_ADD(0)
@@ -14,7 +14,7 @@ ev_z80r0101_obj01:
 	_POKETCH_ADD(19) ; HM App
 	_SYS_FLAG_BADGE_SET($124) 
 	_SYS_FLAG_BADGE_SET($125)
-    ; Work is indicated with a @
-    ; Flags are indicated with a #
-    ; Sys Flags are indicated with a $
-    ; And strings are indicated with ''
+	; Work is indicated with a @
+	; Flags are indicated with a #
+	; Sys Flags are indicated with a $
+	; And strings are indicated with ''
