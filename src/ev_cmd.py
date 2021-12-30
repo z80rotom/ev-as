@@ -1227,5 +1227,7 @@ class EvCmdType(IntEnum):
     _RESET_STOP_EYE_ENCOUNT = auto()
     _OPEN_CUSTUM_WIN_FIXED = auto()
     _PLAY_REPORT_TRAINING = auto()
+    _GET_WATER_GYM_WATER_LEVEL = auto()
+    _REGET_WATER_GYM_WATER_LEVEL = auto()
     _PLAY_REPORT_BTLTOWER_WIN = auto()
     _CMD_NAME_END = auto()

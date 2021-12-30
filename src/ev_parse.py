@@ -100,8 +100,8 @@ def parse_ev_scripts(ifdir, ofdir):
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("-i", "--input", dest='ifpath', action='store', required=True)
-    parser.add_argument("-o", "--output", dest='ofdir', action='store', default="parsed")
+    parser.add_argument("-i", "--input", dest='ifpath', action='store', default="Dpr/ev_script")
+    parser.add_argument("-o", "--output", dest='ofdir', action='store', default="scripts")
     
     vargs = parser.parse_args()
     parse_ev_scripts(vargs.ifpath, vargs.ofdir)
