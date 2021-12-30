@@ -7,19 +7,128 @@ from argparse import ArgumentParser
 import UnityPy
 
 from antlr4 import *
-from evAssembler import evAssembler
+from evAssembler import EvCmd, evAssembler
 from evLexer import evLexer
 from evParser import evParser
 
 from ev_argtype import EvArgType
+from ev_cmd import EvCmdType
 from function_definitions import FunctionDefinition
+
+
+class GDataManager:
+    SCENARIO_MSGS = None
+    DISABLED_MSGS = False
+
+    @classmethod
+    def getMoveById(cls, moveId):
+        move_list = cls.getMoveList()
+        return move_list[moveId]
+
+    @classmethod
+    def getScenarioMsgList(cls):
+        if cls.DISABLED_MSGS:
+            return None
+        if not cls.SCENARIO_MSGS:
+            scenario1 = []
+            scenario2 = []
+            scenario3 = []
+            try:
+                with open("AssetFolder/english_Export/english_dp_scenario1.json", "r", encoding='utf-8') as ifobj:
+                    data = json.load(ifobj)
+                    for entry in data["labelDataArray"]:
+                        labelName = entry["labelName"]
+                        scenario1.append(labelName)
+                with open("AssetFolder/english_Export/english_dp_scenario2.json", "r", encoding='utf-8') as ifobj:
+                    data = json.load(ifobj)
+                    for entry in data["labelDataArray"]:
+                        labelName = entry["labelName"]
+                        scenario2.append(labelName)
+                with open("AssetFolder/english_Export/english_dp_scenario3.json", "r", encoding='utf-8') as ifobj:
+                    data = json.load(ifobj)
+                    for entry in data["labelDataArray"]:
+                        labelName = entry["labelName"]
+                        scenario3.append(labelName)
+            except FileNotFoundError as exc:
+                cls.DISABLED_MSGS = True
+                print("Warning: english files not found. Message validation will not be enabled: {}".format(exc))
+                return None
+            cls.SCENARIO_MSGS = {
+                'dp_scenario1' : scenario1,
+                'dp_scenario2' : scenario2,
+                'dp_scenario3' : scenario3
+            }
+        return cls.SCENARIO_MSGS    
 
 def jsonDumpUnity(tree, ofpath):
     with open(ofpath, "w") as ofobj:
         json.dump(tree, ofobj, indent=4)
 
+def validate_talk_msg(cmd: EvCmd, strList):
+    scenarioMsgList = GDataManager.getScenarioMsgList()
+    if scenarioMsgList is None:
+        return
+    msgIdx = cmd.args[0].data
+    msg = strList[msgIdx]
+    splitMsg = msg.split('%')
+    try:
+        dataFile = splitMsg[0]
+        unlocalized_key = splitMsg[1]
+    except IndexError:
+        return
+        # raise RuntimeError('Invalid msg: {} passed to {} at {}: {}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
+
+    if dataFile not in scenarioMsgList:
+        raise RuntimeError('Unknown datafile: {} passed to {} at {}:{}'.format(dataFile, cmd.cmdType.name, cmd.line, cmd.column))
+    if unlocalized_key not in scenarioMsgList[dataFile]:
+        raise RuntimeError('Unknown message: {} passed to {} at {}:{}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
+
+def validate_talk_keywait(cmd: EvCmd, strList: list):
+    scenarioMsgList = GDataManager.getScenarioMsgList()
+    if scenarioMsgList is None:
+        return
+    msgIdx = cmd.args[0].data
+    msg = strList[msgIdx]
+    splitMsg = msg.split('%')
+    try:
+        dataFile = splitMsg[0]
+        unlocalized_key = splitMsg[1]
+    except IndexError:
+        return
+        # raise RuntimeError('Invalid msg: {} passed to {} at {}: {}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
+
+    if dataFile not in scenarioMsgList:
+        raise RuntimeError('Unknown datafile: {} passed to {} at {}:{}'.format(dataFile, cmd.cmdType.name, cmd.line, cmd.column))
+    if unlocalized_key not in scenarioMsgList[dataFile]:
+        raise RuntimeError('Unknown message: {} passed to {} at {}:{}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
+
+def validate_easy_obj_msg(cmd: EvCmd, strList: list):
+    scenarioMsgList = GDataManager.getScenarioMsgList()
+    if scenarioMsgList is None:
+        return
+    msgIdx = cmd.args[0].data
+    msg = strList[msgIdx]
+    splitMsg = msg.split('%')
+    try:
+        dataFile = splitMsg[0]
+        unlocalized_key = splitMsg[1]
+    except IndexError:
+        return
+        # raise RuntimeError('Invalid msg: {} passed to {} at {}: {}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
+
+    if dataFile not in scenarioMsgList:
+        raise RuntimeError('Unknown datafile: {} passed to {} at {}:{}'.format(dataFile, cmd.cmdType.name, cmd.line, cmd.column))
+    if unlocalized_key not in scenarioMsgList[dataFile]:
+        raise RuntimeError('Unknown message: {} passed to {} at {}:{}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
+
+VALIDATE_TABLE = {
+    EvCmdType._TALKMSG : validate_talk_msg,
+    EvCmdType._TALK_KEYWAIT : validate_talk_keywait,
+    EvCmdType._EASY_OBJ_MSG : validate_easy_obj_msg,
+}
+
 def convertToUnity(ifpath, scripts, strList):
-    FunctionDefinition.load("ev_scripts.json")
+    # FunctionDefinition.load("ev_scripts.json")
     tree = {}
     treeScripts = []
 
@@ -34,6 +143,13 @@ def convertToUnity(ifpath, scripts, strList):
                     "data" : evCmdType.value
                 }
             ]
+
+            if evCmdType in VALIDATE_TABLE:
+                valid_func = VALIDATE_TABLE[evCmdType]
+                try:
+                    valid_func(cmd, strList)
+                except RuntimeError as exc:
+                    print(exc)
 
             # reqArgs = funcDef.noReqArgs()
             # if len(cmd.args) < reqArgs:
@@ -133,14 +249,14 @@ def assemble_all():
     repackUnityAll("Dpr/ev_script", "bin/ev_script", scripts)
 
 def main():
-    parser = ArgumentParser()
-    parser.add_argument("-i", "--input", dest='ifpath', action='store', required=True)
-    parser.add_argument("-o", "--output", dest='ofpath', action='store', required=True)
-    parser.add_argument("-s", "--script", dest='script', action='store', required=True)
+    # parser = ArgumentParser()
+    # parser.add_argument("-i", "--input", dest='ifpath', action='store', required=True)
+    # parser.add_argument("-o", "--output", dest='ofpath', action='store', required=True)
+    # parser.add_argument("-s", "--script", dest='script', action='store', required=True)
 
-    vargs = parser.parse_args()
-    assemble(vargs.ifpath, vargs.ofpath, vargs.script)
-    # assemble_all()
+    # vargs = parser.parse_args()
+    # assemble(vargs.ifpath, vargs.ofpath, vargs.script)
+    assemble_all()
 
 if __name__ == "__main__":
     main()
