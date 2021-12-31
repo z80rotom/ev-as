@@ -1,7 +1,7 @@
 from enum import IntEnum, auto
 
 class EvSysFlag(IntEnum):
-	SYS_FLAG_ARRIVE_START = auto()
+	SYS_FLAG_ARRIVE_START = 0
 	SYS_FLAG_BAG_GET = auto()
 	SYS_FLAG_PAIR = auto()
 	SYS_FLAG_KAIRIKI = auto()

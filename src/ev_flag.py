@@ -1,7 +1,7 @@
 from enum import IntEnum, auto
 
 class EvFlag(IntEnum):
-	FH_01 = auto()
+	FH_01 = 0
 	FH_02 = auto()
 	FH_03 = auto()
 	FH_04 = auto()

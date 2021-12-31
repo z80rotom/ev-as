@@ -1,7 +1,7 @@
 from enum import IntEnum, auto
 
 class EvWork(IntEnum):
-	LOCALWORK0 = auto()
+	LOCALWORK0 = 0
 	LOCALWORK1 = auto()
 	LOCALWORK2 = auto()
 	LOCALWORK3 = auto()
