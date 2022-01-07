@@ -136,4 +136,7 @@ dmypy.json
 # Extra Scripts
 *.ev
 
+# cx_freeze
+build*
+
 test
