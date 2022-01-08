@@ -6,6 +6,9 @@ import UnityPy
 
 from ev_cmd import EvCmdType
 from ev_argtype import EvArgType
+from ev_work import EvWork
+from ev_flag import EvFlag
+from ev_sys_flag import EvSysFlag
 
 def decode_int(var):
     # Thanks Aldo796
@@ -47,15 +50,27 @@ def parse_ev_script(tree, name=None):
                     continue
                 if arg["argType"] == EvArgType.Work:
                     # Work
-                    argData.append("@{}".format(arg["data"]))
+                    try:
+                        evWork = EvWork(int(arg["data"]))
+                        argData.append("@{}".format(evWork.name))
+                    except ValueError: # Unknown work
+                        argData.append("@{}".format(arg["data"]))
                     continue
                 if arg["argType"] == EvArgType.Flag:
                     # Flag
-                    argData.append("#{}".format(arg["data"]))
+                    try:
+                        evFlag = EvFlag(int(arg["data"]))
+                        argData.append("#{}".format(evFlag.name))
+                    except ValueError: # Unknown flag
+                        argData.append("#{}".format(arg["data"]))
                     continue
                 if arg["argType"] == EvArgType.SysFlag:
                     # Sys Flag
-                    argData.append("${}".format(arg["data"]))
+                    try:
+                        evSysFlag = EvSysFlag(int(arg["data"]))
+                        argData.append("${}".format(evSysFlag.name))                    
+                    except ValueError: # Unknown sys flag
+                        argData.append("${}".format(arg["data"]))
                     continue                
                 if arg["argType"] == EvArgType.String:
                     strIdx = arg["data"]
@@ -92,16 +107,20 @@ def parse_ev_scripts(ifdir, ofdir):
 
         for obj in bundle.objects:
             if obj.type.name == "MonoBehaviour":
-                data = obj.read()
-                if obj.serialized_type.nodes:
+                try:
+                    data = obj.read()
+                    if obj.serialized_type.nodes:
                         tree = obj.read_typetree()
                         compiledScripts = parse_ev_script(tree, name=data.name)
                         write_ev_script(ofdir, data.name, compiledScripts)
+                except Exception as exc:
+                    print(exc)
+                    print("Failed to unpack: {}".format(obj))
 
 def main():
     parser = ArgumentParser()
     parser.add_argument("-i", "--input", dest='ifpath', action='store', default="Dpr/ev_script")
-    parser.add_argument("-o", "--output", dest='ofdir', action='store', default="scripts")
+    parser.add_argument("-o", "--output", dest='ofdir', action='store', default="parsed")
     
     vargs = parser.parse_args()
     parse_ev_scripts(vargs.ifpath, vargs.ofdir)

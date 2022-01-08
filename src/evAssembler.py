@@ -12,6 +12,9 @@ else:
 
 from evListener import evListener
 from ev_cmd import EvCmdType
+from ev_work import EvWork
+from ev_flag import EvFlag
+from ev_sys_flag import EvSysFlag
 
 MAX_WORK = 500
 MAX_FLAG = 4000
@@ -68,24 +71,27 @@ class evAssembler(evListener):
         self.currCmdIdx += 1
 
     def enterNumber(self, ctx: evParser.NumberContext):
-        # Note this probably won't always work this well
         argVal = encode_float(float(str(ctx.getChild(0))))
         try:
             self.writer.write_int(argVal)
         except Exception as exc:
             print("Invalid float: {}".format(argVal))
-        # Defaulting to argType 1 since that is passing by value
-        # but that just simply isn't true for most of these
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
             EvArg(EvArgType.Value, argVal, ctx.start.line, ctx.start.column)
         )
     
     def enterWork(self, ctx: evParser.WorkContext):
-        # Note this probably won't always work this well
-        argVal = int(str(ctx.getChild(0))[1:])
+        argVal = str(ctx.getChild(0))[1:]
 
-        # Defaulting to argType 1 since that is passing by value
-        # but that just simply isn't true for most of these
+        if argVal.isdigit():
+            argVal = int(argVal)
+        else:
+            argVal = argVal.upper()
+            if hasattr(EvWork, argVal):
+                argVal = getattr(EvWork, argVal)
+            else:
+                raise RuntimeError("Unknown work: {}. Cannot convert to number {}:{}".format(argVal, ctx.start.line, ctx.start.column))
+
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
             EvArg(EvArgType.Work, argVal, ctx.start.line, ctx.start.column)
         )
@@ -94,10 +100,17 @@ class evAssembler(evListener):
             print("[Warning] line {}:{} Invalid work: @{}".format(ctx.start.line, ctx.start.column, argVal))
 
     def enterFlag(self, ctx: evParser.FlagContext):
-        # Note this probably won't always work this well
-        argVal = int(str(ctx.getChild(0))[1:])
-        # Defaulting to argType 1 since that is passing by value
-        # but that just simply isn't true for most of these
+        argVal = str(ctx.getChild(0))[1:]
+
+        if argVal.isdigit():
+            argVal = int(argVal)
+        else:
+            argVal = argVal.upper()
+            if hasattr(EvFlag, argVal):
+                argVal = getattr(EvFlag, argVal)
+            else:
+                raise RuntimeError("Unknown Flag: {}. Cannot convert to number {}:{}".format(argVal, ctx.start.line, ctx.start.column))
+
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
             EvArg(EvArgType.Flag, argVal, ctx.start.line, ctx.start.column)
         )
@@ -106,10 +119,17 @@ class evAssembler(evListener):
             print("[Warning] line {}:{} Invalid Flag: #{}".format(ctx.start.line, ctx.start.column, argVal))
 
     def enterSysFlag(self, ctx: evParser.SysFlagContext):
-        # Note this probably won't always work this well
-        argVal = int(str(ctx.getChild(0))[1:])
-        # Defaulting to argType 1 since that is passing by value
-        # but that just simply isn't true for most of these
+        argVal = str(ctx.getChild(0))[1:]
+
+        if argVal.isdigit():
+            argVal = int(argVal)
+        else:
+            argVal = argVal.upper()
+            if hasattr(EvSysFlag, argVal):
+                argVal = getattr(EvSysFlag, argVal)
+            else:
+                raise RuntimeError("Unknown SysFlag: {}. Cannot convert to number {}:{}".format(argVal, ctx.start.line, ctx.start.column))
+
         self.scripts[self.currentLabel][self.currCmdIdx].args.append(
             EvArg(EvArgType.SysFlag, argVal, ctx.start.line, ctx.start.column)
         )
