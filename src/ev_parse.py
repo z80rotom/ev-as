@@ -107,11 +107,15 @@ def parse_ev_scripts(ifdir, ofdir):
 
         for obj in bundle.objects:
             if obj.type.name == "MonoBehaviour":
-                data = obj.read()
-                if obj.serialized_type.nodes:
+                try:
+                    data = obj.read()
+                    if obj.serialized_type.nodes:
                         tree = obj.read_typetree()
                         compiledScripts = parse_ev_script(tree, name=data.name)
                         write_ev_script(ofdir, data.name, compiledScripts)
+                except Exception as exc:
+                    print(exc)
+                    print("Failed to unpack: {}".format(obj))
 
 def main():
     parser = ArgumentParser()
