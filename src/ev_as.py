@@ -241,7 +241,7 @@ def assemble_all():
         parser = evParser(stream)
         tree = parser.prog()
 
-        assembler = evAssembler()
+        assembler = evAssembler(ifpath)
         walker = ParseTreeWalker()
         walker.walk(assembler, tree)
         unityTree = convertToUnity(ifpath, assembler.scripts, assembler.strTbl)
@@ -257,6 +257,7 @@ def main():
     # vargs = parser.parse_args()
     # assemble(vargs.ifpath, vargs.ofpath, vargs.script)
     assemble_all()
+    print("Assembly finished")
 
 if __name__ == "__main__":
     main()
