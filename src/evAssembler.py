@@ -106,8 +106,8 @@ class evAssembler(evListener):
             argVal = int(argVal)
         else:
             argVal = argVal.upper()
-            if hasattr(EvWork, argVal):
-                argVal = getattr(EvWork, argVal)
+            if hasattr(EvFlag, argVal):
+                argVal = getattr(EvFlag, argVal)
             else:
                 raise RuntimeError("Unknown Flag: {}. Cannot convert to number {}:{}".format(argVal, ctx.start.line, ctx.start.column))
 
