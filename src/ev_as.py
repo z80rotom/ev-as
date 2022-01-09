@@ -26,7 +26,7 @@ class GDataManager:
         return move_list[moveId]
 
     @classmethod
-    def getScenarioMsgList(cls):
+    def getScenarioMsgList(cls, messagepath):
         if cls.DISABLED_MSGS:
             return None
         if not cls.SCENARIO_MSGS:
@@ -34,17 +34,17 @@ class GDataManager:
             scenario2 = []
             scenario3 = []
             try:
-                with open("AssetFolder/english_Export/english_dp_scenario1.json", "r", encoding='utf-8') as ifobj:
+                with open(os.path.join(messagepath, "english_dp_scenario1.json", "r", encoding='utf-8')) as ifobj:
                     data = json.load(ifobj)
                     for entry in data["labelDataArray"]:
                         labelName = entry["labelName"]
                         scenario1.append(labelName)
-                with open("AssetFolder/english_Export/english_dp_scenario2.json", "r", encoding='utf-8') as ifobj:
+                with open(os.path.join(messagepath, "english_dp_scenario2.json", "r", encoding='utf-8')) as ifobj:
                     data = json.load(ifobj)
                     for entry in data["labelDataArray"]:
                         labelName = entry["labelName"]
                         scenario2.append(labelName)
-                with open("AssetFolder/english_Export/english_dp_scenario3.json", "r", encoding='utf-8') as ifobj:
+                with open(os.path.join(messagepath, "english_dp_scenario3.json", "r", encoding='utf-8')) as ifobj:
                     data = json.load(ifobj)
                     for entry in data["labelDataArray"]:
                         labelName = entry["labelName"]
@@ -64,8 +64,8 @@ def jsonDumpUnity(tree, ofpath):
     with open(ofpath, "w") as ofobj:
         json.dump(tree, ofobj, indent=4)
 
-def validate_talk_msg(cmd: EvCmd, strList):
-    scenarioMsgList = GDataManager.getScenarioMsgList()
+def validate_talk_msg(cmd: EvCmd, strList, messagepath):
+    scenarioMsgList = GDataManager.getScenarioMsgList(messagepath=messagepath)
     if scenarioMsgList is None:
         return
     msgIdx = cmd.args[0].data
@@ -83,8 +83,8 @@ def validate_talk_msg(cmd: EvCmd, strList):
     if unlocalized_key not in scenarioMsgList[dataFile]:
         raise RuntimeError('Unknown message: {} passed to {} at {}:{}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
 
-def validate_talk_keywait(cmd: EvCmd, strList: list):
-    scenarioMsgList = GDataManager.getScenarioMsgList()
+def validate_talk_keywait(cmd: EvCmd, strList: list, messagepath):
+    scenarioMsgList = GDataManager.getScenarioMsgList(messagepath=messagepath)
     if scenarioMsgList is None:
         return
     msgIdx = cmd.args[0].data
@@ -102,8 +102,8 @@ def validate_talk_keywait(cmd: EvCmd, strList: list):
     if unlocalized_key not in scenarioMsgList[dataFile]:
         raise RuntimeError('Unknown message: {} passed to {} at {}:{}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
 
-def validate_easy_obj_msg(cmd: EvCmd, strList: list):
-    scenarioMsgList = GDataManager.getScenarioMsgList()
+def validate_easy_obj_msg(cmd: EvCmd, strList: list, messagepath):
+    scenarioMsgList = GDataManager.getScenarioMsgList(messagepath=messagepath)
     if scenarioMsgList is None:
         return
     msgIdx = cmd.args[0].data
@@ -127,7 +127,7 @@ VALIDATE_TABLE = {
     EvCmdType._EASY_OBJ_MSG : validate_easy_obj_msg,
 }
 
-def convertToUnity(ifpath, scripts, strList):
+def convertToUnity(ifpath, scripts, strList, messagepath):
     # FunctionDefinition.load("ev_scripts.json")
     tree = {}
     treeScripts = []
@@ -144,10 +144,10 @@ def convertToUnity(ifpath, scripts, strList):
                 }
             ]
 
-            if evCmdType in VALIDATE_TABLE:
+            if messagepath and evCmdType in VALIDATE_TABLE:
                 valid_func = VALIDATE_TABLE[evCmdType]
                 try:
-                    valid_func(cmd, strList)
+                    valid_func(cmd, strList, messagepath)
                 except RuntimeError as exc:
                     print(exc)
 
@@ -199,7 +199,7 @@ def repackUnity(ofpath, script, unityTree):
         # Thanks Aldo796
         ofobj.write(bundle.file.save(packer=(64,2)))
 
-def assemble(ifpath, ofpath, script):
+def assemble(ifpath, ofpath, script, messagepath):
     input_stream = FileStream(ifpath)
     lexer = evLexer(input_stream)
     stream = CommonTokenStream(lexer)
@@ -209,12 +209,12 @@ def assemble(ifpath, ofpath, script):
     assembler = evAssembler()
     walker = ParseTreeWalker()
     walker.walk(assembler, tree)
-    unityTree = convertToUnity(assembler.scripts, assembler.strTbl)
+    unityTree = convertToUnity(assembler.scripts, assembler.strTbl, messagepath)
     repackUnity(ofpath, script, unityTree)
 
-def repackUnityAll(ifpath, ofpath, scripts):
-    with open(ifpath, "rb") as ifobj:
-            bundle = UnityPy.load(ifpath)
+def repackUnityAll(ofpath, scripts):
+    with open(ofpath, "rb") as ifobj:
+            bundle = UnityPy.load(ofpath)
 
             for obj in bundle.objects:
                 if obj.type.name == "MonoBehaviour":
@@ -230,9 +230,9 @@ def repackUnityAll(ifpath, ofpath, scripts):
         # Thanks Aldo796
         ofobj.write(bundle.file.save(packer=(64,2)))
 
-def assemble_all():
+def assemble_all(idfpath, ofpath, messagepath):
     scripts = {}
-    for ifpath in glob.glob("scripts/*.ev"):
+    for ifpath in glob.glob(os.path.join(idfpath, "*.ev")):
         basename = os.path.basename(ifpath)
         basename = os.path.splitext(basename)[0]
         input_stream = FileStream(ifpath)
@@ -244,19 +244,26 @@ def assemble_all():
         assembler = evAssembler()
         walker = ParseTreeWalker()
         walker.walk(assembler, tree)
-        unityTree = convertToUnity(ifpath, assembler.scripts, assembler.strTbl)
+        unityTree = convertToUnity(ifpath, assembler.scripts, assembler.strTbl, messagepath)
         scripts[basename] = unityTree
-    repackUnityAll("Dpr/ev_script", "bin/ev_script", scripts)
+    repackUnityAll(ofpath, scripts)
 
 def main():
-    # parser = ArgumentParser()
-    # parser.add_argument("-i", "--input", dest='ifpath', action='store', required=True)
-    # parser.add_argument("-o", "--output", dest='ofpath', action='store', required=True)
-    # parser.add_argument("-s", "--script", dest='script', action='store', required=True)
+    parser = ArgumentParser()
+    parser.add_argument("-i", "--input", dest='ifpath', action='store', default='scripts')
+    parser.add_argument("-o", "--output", dest='ofpath', action='store', default='bin/ev_script')
+    parser.add_argument("-s", "--script", dest='script', action='store')
+    parser.add_argument("-v", "--validate", dest='validate', action='store', type=bool, default=True)
+    parser.add_argument("-m", "--message", dest='message', action='store', default='AssetFolder/english_Export')
 
-    # vargs = parser.parse_args()
-    # assemble(vargs.ifpath, vargs.ofpath, vargs.script)
-    assemble_all()
+    vargs = parser.parse_args()
+    messagePath = vargs.message if vargs.validate else None
+    
+    if os.path.isfile(vargs.ifpath):
+        script = vargs.script if vargs.script else os.path.basename(os.path.basename(vargs.ifpath))
+        assemble(vargs.ifpath, vargs.ofpath, script, messagePath)
+    else:
+        assemble_all(vargs.ifpath, vargs.ofpath, messagePath)
 
 if __name__ == "__main__":
     main()
