@@ -209,7 +209,7 @@ def assemble(ifpath, ofpath, script, messagepath):
     assembler = evAssembler()
     walker = ParseTreeWalker()
     walker.walk(assembler, tree)
-    unityTree = convertToUnity(assembler.scripts, assembler.strTbl, messagepath)
+    unityTree = convertToUnity(ifpath, assembler.scripts, assembler.strTbl, messagepath)
     repackUnity(ofpath, script, unityTree)
 
 def repackUnityAll(ofpath, scripts):
