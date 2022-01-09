@@ -253,7 +253,9 @@ def main():
     parser.add_argument("-i", "--input", dest='ifpath', action='store', default='scripts')
     parser.add_argument("-o", "--output", dest='ofpath', action='store', default='bin/ev_script')
     parser.add_argument("-s", "--script", dest='script', action='store')
-    parser.add_argument("-v", "--validate", dest='validate', action='store', type=bool, default=True)
+    parser.add_argument("-v", "--validate", dest='validate', action='store_true')
+    parser.add_argument("-nv", "--no-validate", dest='validate', action='store_false')
+    parser.set_defaults(validate=True)
     parser.add_argument("-m", "--message", dest='message', action='store', default='AssetFolder/english_Export')
 
     vargs = parser.parse_args()
