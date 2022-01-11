@@ -35,6 +35,15 @@ class evListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by evParser#evCmd.
+    def enterEvCmd(self, ctx:evParser.EvCmdContext):
+        pass
+
+    # Exit a parse tree produced by evParser#evCmd.
+    def exitEvCmd(self, ctx:evParser.EvCmdContext):
+        pass
+
+
     # Enter a parse tree produced by evParser#lbl.
     def enterLbl(self, ctx:evParser.LblContext):
         pass
@@ -71,6 +80,15 @@ class evListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by evParser#number.
+    def enterNumber(self, ctx:evParser.NumberContext):
+        pass
+
+    # Exit a parse tree produced by evParser#number.
+    def exitNumber(self, ctx:evParser.NumberContext):
+        pass
+
+
     # Enter a parse tree produced by evParser#work.
     def enterWork(self, ctx:evParser.WorkContext):
         pass
@@ -95,24 +113,6 @@ class evListener(ParseTreeListener):
 
     # Exit a parse tree produced by evParser#sysFlag.
     def exitSysFlag(self, ctx:evParser.SysFlagContext):
-        pass
-
-
-    # Enter a parse tree produced by evParser#name.
-    def enterName(self, ctx:evParser.NameContext):
-        pass
-
-    # Exit a parse tree produced by evParser#name.
-    def exitName(self, ctx:evParser.NameContext):
-        pass
-
-
-    # Enter a parse tree produced by evParser#number.
-    def enterNumber(self, ctx:evParser.NumberContext):
-        pass
-
-    # Exit a parse tree produced by evParser#number.
-    def exitNumber(self, ctx:evParser.NumberContext):
         pass
 
 

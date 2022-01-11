@@ -12,35 +12,31 @@ else:
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\17")
-        buf.write("a\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b")
+        buf.write("U\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b")
         buf.write("\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16\t")
-        buf.write("\16\3\2\5\2\36\n\2\3\2\6\2!\n\2\r\2\16\2\"\3\2\3\2\3\3")
-        buf.write("\5\3(\n\3\3\3\5\3+\n\3\3\3\5\3.\n\3\3\4\3\4\3\4\3\5\3")
-        buf.write("\5\3\5\3\6\3\6\3\6\3\6\7\6:\n\6\f\6\16\6=\13\6\5\6?\n")
-        buf.write("\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\5\7H\n\7\3\b\3\b\3\t\3")
-        buf.write("\t\3\t\5\tO\n\t\3\n\3\n\3\n\5\nT\n\n\3\13\3\13\3\13\5")
-        buf.write("\13Y\n\13\3\f\3\f\3\r\3\r\3\16\3\16\3\16\2\2\17\2\4\6")
-        buf.write("\b\n\f\16\20\22\24\26\30\32\2\2\2a\2 \3\2\2\2\4\'\3\2")
-        buf.write("\2\2\6/\3\2\2\2\b\62\3\2\2\2\n\65\3\2\2\2\fG\3\2\2\2\16")
-        buf.write("I\3\2\2\2\20K\3\2\2\2\22P\3\2\2\2\24U\3\2\2\2\26Z\3\2")
-        buf.write("\2\2\30\\\3\2\2\2\32^\3\2\2\2\34\36\5\4\3\2\35\34\3\2")
-        buf.write("\2\2\35\36\3\2\2\2\36\37\3\2\2\2\37!\7\16\2\2 \35\3\2")
-        buf.write("\2\2!\"\3\2\2\2\" \3\2\2\2\"#\3\2\2\2#$\3\2\2\2$%\5\4")
-        buf.write("\3\2%\3\3\2\2\2&(\5\b\5\2\'&\3\2\2\2\'(\3\2\2\2(*\3\2")
-        buf.write("\2\2)+\5\6\4\2*)\3\2\2\2*+\3\2\2\2+-\3\2\2\2,.\5\32\16")
-        buf.write("\2-,\3\2\2\2-.\3\2\2\2.\5\3\2\2\2/\60\5\26\f\2\60\61\5")
-        buf.write("\n\6\2\61\7\3\2\2\2\62\63\5\26\f\2\63\64\7\3\2\2\64\t")
-        buf.write("\3\2\2\2\65>\7\4\2\2\66;\5\f\7\2\678\7\5\2\28:\5\f\7\2")
-        buf.write("9\67\3\2\2\2:=\3\2\2\2;9\3\2\2\2;<\3\2\2\2<?\3\2\2\2=")
-        buf.write(";\3\2\2\2>\66\3\2\2\2>?\3\2\2\2?@\3\2\2\2@A\7\6\2\2A\13")
-        buf.write("\3\2\2\2BH\5\30\r\2CH\5\20\t\2DH\5\22\n\2EH\5\24\13\2")
-        buf.write("FH\5\16\b\2GB\3\2\2\2GC\3\2\2\2GD\3\2\2\2GE\3\2\2\2GF")
-        buf.write("\3\2\2\2H\r\3\2\2\2IJ\7\r\2\2J\17\3\2\2\2KN\7\7\2\2LO")
-        buf.write("\5\26\f\2MO\5\30\r\2NL\3\2\2\2NM\3\2\2\2O\21\3\2\2\2P")
-        buf.write("S\7\b\2\2QT\5\26\f\2RT\5\30\r\2SQ\3\2\2\2SR\3\2\2\2T\23")
-        buf.write("\3\2\2\2UX\7\t\2\2VY\5\26\f\2WY\5\30\r\2XV\3\2\2\2XW\3")
-        buf.write("\2\2\2Y\25\3\2\2\2Z[\7\n\2\2[\27\3\2\2\2\\]\7\13\2\2]")
-        buf.write("\31\3\2\2\2^_\7\f\2\2_\33\3\2\2\2\r\35\"\'*-;>GNSX")
+        buf.write("\16\3\2\5\2\36\n\2\3\2\6\2!\n\2\r\2\16\2\"\3\3\5\3&\n")
+        buf.write("\3\3\3\5\3)\n\3\3\3\5\3,\n\3\3\4\3\4\3\4\3\5\3\5\3\6\3")
+        buf.write("\6\3\7\3\7\3\7\3\7\7\79\n\7\f\7\16\7<\13\7\5\7>\n\7\3")
+        buf.write("\7\3\7\3\b\3\b\3\b\3\b\3\b\5\bG\n\b\3\t\3\t\3\n\3\n\3")
+        buf.write("\13\3\13\3\f\3\f\3\r\3\r\3\16\3\16\3\16\2\2\17\2\4\6\b")
+        buf.write("\n\f\16\20\22\24\26\30\32\2\2\2R\2 \3\2\2\2\4%\3\2\2\2")
+        buf.write("\6-\3\2\2\2\b\60\3\2\2\2\n\62\3\2\2\2\f\64\3\2\2\2\16")
+        buf.write("F\3\2\2\2\20H\3\2\2\2\22J\3\2\2\2\24L\3\2\2\2\26N\3\2")
+        buf.write("\2\2\30P\3\2\2\2\32R\3\2\2\2\34\36\5\4\3\2\35\34\3\2\2")
+        buf.write("\2\35\36\3\2\2\2\36\37\3\2\2\2\37!\7\16\2\2 \35\3\2\2")
+        buf.write("\2!\"\3\2\2\2\" \3\2\2\2\"#\3\2\2\2#\3\3\2\2\2$&\5\n\6")
+        buf.write("\2%$\3\2\2\2%&\3\2\2\2&(\3\2\2\2\')\5\6\4\2(\'\3\2\2\2")
+        buf.write("()\3\2\2\2)+\3\2\2\2*,\5\32\16\2+*\3\2\2\2+,\3\2\2\2,")
+        buf.write("\5\3\2\2\2-.\5\b\5\2./\5\f\7\2/\7\3\2\2\2\60\61\7\7\2")
+        buf.write("\2\61\t\3\2\2\2\62\63\7\6\2\2\63\13\3\2\2\2\64=\7\3\2")
+        buf.write("\2\65:\5\16\b\2\66\67\7\4\2\2\679\5\16\b\28\66\3\2\2\2")
+        buf.write("9<\3\2\2\2:8\3\2\2\2:;\3\2\2\2;>\3\2\2\2<:\3\2\2\2=\65")
+        buf.write("\3\2\2\2=>\3\2\2\2>?\3\2\2\2?@\7\5\2\2@\r\3\2\2\2AG\5")
+        buf.write("\22\n\2BG\5\24\13\2CG\5\26\f\2DG\5\30\r\2EG\5\20\t\2F")
+        buf.write("A\3\2\2\2FB\3\2\2\2FC\3\2\2\2FD\3\2\2\2FE\3\2\2\2G\17")
+        buf.write("\3\2\2\2HI\7\r\2\2I\21\3\2\2\2JK\7\b\2\2K\23\3\2\2\2L")
+        buf.write("M\7\t\2\2M\25\3\2\2\2NO\7\n\2\2O\27\3\2\2\2PQ\7\13\2\2")
+        buf.write("Q\31\3\2\2\2RS\7\f\2\2S\33\3\2\2\2\n\35\"%(+:=F")
         return buf.getvalue()
 
 
@@ -54,41 +50,40 @@ class evParser ( Parser ):
 
     sharedContextCache = PredictionContextCache()
 
-    literalNames = [ "<INVALID>", "':'", "'('", "','", "')'", "'@'", "'#'", 
-                     "'$'" ]
+    literalNames = [ "<INVALID>", "'('", "','", "')'" ]
 
     symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "NAME", "NUMBER", "COMMENT", "STRING", "EOL", "WS" ]
+                      "LABEL", "EVCMD", "NUMBER", "WORK", "FLAG", "SYS_FLAG", 
+                      "COMMENT", "STRING", "EOL", "WS" ]
 
     RULE_prog = 0
     RULE_line = 1
     RULE_instruction = 2
-    RULE_lbl = 3
-    RULE_expressionlist = 4
-    RULE_argument = 5
-    RULE_string_ = 6
-    RULE_work = 7
-    RULE_flag = 8
-    RULE_sysFlag = 9
-    RULE_name = 10
-    RULE_number = 11
+    RULE_evCmd = 3
+    RULE_lbl = 4
+    RULE_expressionlist = 5
+    RULE_argument = 6
+    RULE_string_ = 7
+    RULE_number = 8
+    RULE_work = 9
+    RULE_flag = 10
+    RULE_sysFlag = 11
     RULE_comment = 12
 
-    ruleNames =  [ "prog", "line", "instruction", "lbl", "expressionlist", 
-                   "argument", "string_", "work", "flag", "sysFlag", "name", 
-                   "number", "comment" ]
+    ruleNames =  [ "prog", "line", "instruction", "evCmd", "lbl", "expressionlist", 
+                   "argument", "string_", "number", "work", "flag", "sysFlag", 
+                   "comment" ]
 
     EOF = Token.EOF
     T__0=1
     T__1=2
     T__2=3
-    T__3=4
-    T__4=5
-    T__5=6
-    T__6=7
-    NAME=8
-    NUMBER=9
+    LABEL=4
+    EVCMD=5
+    NUMBER=6
+    WORK=7
+    FLAG=8
+    SYS_FLAG=9
     COMMENT=10
     STRING=11
     EOL=12
@@ -110,18 +105,18 @@ class evParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
+        def EOL(self, i:int=None):
+            if i is None:
+                return self.getTokens(evParser.EOL)
+            else:
+                return self.getToken(evParser.EOL, i)
+
         def line(self, i:int=None):
             if i is None:
                 return self.getTypedRuleContexts(evParser.LineContext)
             else:
                 return self.getTypedRuleContext(evParser.LineContext,i)
 
-
-        def EOL(self, i:int=None):
-            if i is None:
-                return self.getTokens(evParser.EOL)
-            else:
-                return self.getToken(evParser.EOL, i)
 
         def getRuleIndex(self):
             return evParser.RULE_prog
@@ -141,32 +136,29 @@ class evParser ( Parser ):
 
         localctx = evParser.ProgContext(self, self._ctx, self.state)
         self.enterRule(localctx, 0, self.RULE_prog)
+        self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 30 
             self._errHandler.sync(self)
-            _alt = 1
-            while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
-                if _alt == 1:
-                    self.state = 27
-                    self._errHandler.sync(self)
-                    la_ = self._interp.adaptivePredict(self._input,0,self._ctx)
-                    if la_ == 1:
-                        self.state = 26
-                        self.line()
+            _la = self._input.LA(1)
+            while True:
+                self.state = 27
+                self._errHandler.sync(self)
+                la_ = self._interp.adaptivePredict(self._input,0,self._ctx)
+                if la_ == 1:
+                    self.state = 26
+                    self.line()
 
 
-                    self.state = 29
-                    self.match(evParser.EOL)
-
-                else:
-                    raise NoViableAltException(self)
+                self.state = 29
+                self.match(evParser.EOL)
                 self.state = 32 
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,1,self._ctx)
+                _la = self._input.LA(1)
+                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << evParser.LABEL) | (1 << evParser.EVCMD) | (1 << evParser.COMMENT) | (1 << evParser.EOL))) != 0)):
+                    break
 
-            self.state = 34
-            self.line()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -216,27 +208,27 @@ class evParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 37
+            self.state = 35
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,2,self._ctx)
-            if la_ == 1:
-                self.state = 36
+            _la = self._input.LA(1)
+            if _la==evParser.LABEL:
+                self.state = 34
                 self.lbl()
 
 
-            self.state = 40
+            self.state = 38
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==evParser.NAME:
-                self.state = 39
+            if _la==evParser.EVCMD:
+                self.state = 37
                 self.instruction()
 
 
-            self.state = 43
+            self.state = 41
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==evParser.COMMENT:
-                self.state = 42
+                self.state = 40
                 self.comment()
 
 
@@ -256,8 +248,8 @@ class evParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def name(self):
-            return self.getTypedRuleContext(evParser.NameContext,0)
+        def evCmd(self):
+            return self.getTypedRuleContext(evParser.EvCmdContext,0)
 
 
         def expressionlist(self):
@@ -284,10 +276,51 @@ class evParser ( Parser ):
         self.enterRule(localctx, 4, self.RULE_instruction)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 45
-            self.name()
-            self.state = 46
+            self.state = 43
+            self.evCmd()
+            self.state = 44
             self.expressionlist()
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class EvCmdContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def EVCMD(self):
+            return self.getToken(evParser.EVCMD, 0)
+
+        def getRuleIndex(self):
+            return evParser.RULE_evCmd
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterEvCmd" ):
+                listener.enterEvCmd(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitEvCmd" ):
+                listener.exitEvCmd(self)
+
+
+
+
+    def evCmd(self):
+
+        localctx = evParser.EvCmdContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 6, self.RULE_evCmd)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 46
+            self.match(evParser.EVCMD)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -304,9 +337,8 @@ class evParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def name(self):
-            return self.getTypedRuleContext(evParser.NameContext,0)
-
+        def LABEL(self):
+            return self.getToken(evParser.LABEL, 0)
 
         def getRuleIndex(self):
             return evParser.RULE_lbl
@@ -325,13 +357,11 @@ class evParser ( Parser ):
     def lbl(self):
 
         localctx = evParser.LblContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 6, self.RULE_lbl)
+        self.enterRule(localctx, 8, self.RULE_lbl)
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 48
-            self.name()
-            self.state = 49
-            self.match(evParser.T__0)
+            self.match(evParser.LABEL)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -372,34 +402,34 @@ class evParser ( Parser ):
     def expressionlist(self):
 
         localctx = evParser.ExpressionlistContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 8, self.RULE_expressionlist)
+        self.enterRule(localctx, 10, self.RULE_expressionlist)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 51
-            self.match(evParser.T__1)
-            self.state = 60
+            self.state = 50
+            self.match(evParser.T__0)
+            self.state = 59
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << evParser.T__4) | (1 << evParser.T__5) | (1 << evParser.T__6) | (1 << evParser.NUMBER) | (1 << evParser.STRING))) != 0):
-                self.state = 52
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << evParser.NUMBER) | (1 << evParser.WORK) | (1 << evParser.FLAG) | (1 << evParser.SYS_FLAG) | (1 << evParser.STRING))) != 0):
+                self.state = 51
                 self.argument()
-                self.state = 57
+                self.state = 56
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while _la==evParser.T__2:
+                while _la==evParser.T__1:
+                    self.state = 52
+                    self.match(evParser.T__1)
                     self.state = 53
-                    self.match(evParser.T__2)
-                    self.state = 54
                     self.argument()
-                    self.state = 59
+                    self.state = 58
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
 
 
-            self.state = 62
-            self.match(evParser.T__3)
+            self.state = 61
+            self.match(evParser.T__2)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -453,34 +483,34 @@ class evParser ( Parser ):
     def argument(self):
 
         localctx = evParser.ArgumentContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 10, self.RULE_argument)
+        self.enterRule(localctx, 12, self.RULE_argument)
         try:
-            self.state = 69
+            self.state = 68
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [evParser.NUMBER]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 64
+                self.state = 63
                 self.number()
                 pass
-            elif token in [evParser.T__4]:
+            elif token in [evParser.WORK]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 65
+                self.state = 64
                 self.work()
                 pass
-            elif token in [evParser.T__5]:
+            elif token in [evParser.FLAG]:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 66
+                self.state = 65
                 self.flag()
                 pass
-            elif token in [evParser.T__6]:
+            elif token in [evParser.SYS_FLAG]:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 67
+                self.state = 66
                 self.sysFlag()
                 pass
             elif token in [evParser.STRING]:
                 self.enterOuterAlt(localctx, 5)
-                self.state = 68
+                self.state = 67
                 self.string_()
                 pass
             else:
@@ -522,232 +552,11 @@ class evParser ( Parser ):
     def string_(self):
 
         localctx = evParser.String_Context(self, self._ctx, self.state)
-        self.enterRule(localctx, 12, self.RULE_string_)
+        self.enterRule(localctx, 14, self.RULE_string_)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 71
+            self.state = 70
             self.match(evParser.STRING)
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-
-    class WorkContext(ParserRuleContext):
-        __slots__ = 'parser'
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def name(self):
-            return self.getTypedRuleContext(evParser.NameContext,0)
-
-
-        def number(self):
-            return self.getTypedRuleContext(evParser.NumberContext,0)
-
-
-        def getRuleIndex(self):
-            return evParser.RULE_work
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterWork" ):
-                listener.enterWork(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitWork" ):
-                listener.exitWork(self)
-
-
-
-
-    def work(self):
-
-        localctx = evParser.WorkContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 14, self.RULE_work)
-        try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 73
-            self.match(evParser.T__4)
-            self.state = 76
-            self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [evParser.NAME]:
-                self.state = 74
-                self.name()
-                pass
-            elif token in [evParser.NUMBER]:
-                self.state = 75
-                self.number()
-                pass
-            else:
-                raise NoViableAltException(self)
-
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-
-    class FlagContext(ParserRuleContext):
-        __slots__ = 'parser'
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def name(self):
-            return self.getTypedRuleContext(evParser.NameContext,0)
-
-
-        def number(self):
-            return self.getTypedRuleContext(evParser.NumberContext,0)
-
-
-        def getRuleIndex(self):
-            return evParser.RULE_flag
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFlag" ):
-                listener.enterFlag(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFlag" ):
-                listener.exitFlag(self)
-
-
-
-
-    def flag(self):
-
-        localctx = evParser.FlagContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 16, self.RULE_flag)
-        try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 78
-            self.match(evParser.T__5)
-            self.state = 81
-            self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [evParser.NAME]:
-                self.state = 79
-                self.name()
-                pass
-            elif token in [evParser.NUMBER]:
-                self.state = 80
-                self.number()
-                pass
-            else:
-                raise NoViableAltException(self)
-
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-
-    class SysFlagContext(ParserRuleContext):
-        __slots__ = 'parser'
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def name(self):
-            return self.getTypedRuleContext(evParser.NameContext,0)
-
-
-        def number(self):
-            return self.getTypedRuleContext(evParser.NumberContext,0)
-
-
-        def getRuleIndex(self):
-            return evParser.RULE_sysFlag
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSysFlag" ):
-                listener.enterSysFlag(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSysFlag" ):
-                listener.exitSysFlag(self)
-
-
-
-
-    def sysFlag(self):
-
-        localctx = evParser.SysFlagContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 18, self.RULE_sysFlag)
-        try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 83
-            self.match(evParser.T__6)
-            self.state = 86
-            self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [evParser.NAME]:
-                self.state = 84
-                self.name()
-                pass
-            elif token in [evParser.NUMBER]:
-                self.state = 85
-                self.number()
-                pass
-            else:
-                raise NoViableAltException(self)
-
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-
-    class NameContext(ParserRuleContext):
-        __slots__ = 'parser'
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def NAME(self):
-            return self.getToken(evParser.NAME, 0)
-
-        def getRuleIndex(self):
-            return evParser.RULE_name
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterName" ):
-                listener.enterName(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitName" ):
-                listener.exitName(self)
-
-
-
-
-    def name(self):
-
-        localctx = evParser.NameContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 20, self.RULE_name)
-        try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 88
-            self.match(evParser.NAME)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -784,11 +593,134 @@ class evParser ( Parser ):
     def number(self):
 
         localctx = evParser.NumberContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 22, self.RULE_number)
+        self.enterRule(localctx, 16, self.RULE_number)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 90
+            self.state = 72
             self.match(evParser.NUMBER)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class WorkContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def WORK(self):
+            return self.getToken(evParser.WORK, 0)
+
+        def getRuleIndex(self):
+            return evParser.RULE_work
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterWork" ):
+                listener.enterWork(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitWork" ):
+                listener.exitWork(self)
+
+
+
+
+    def work(self):
+
+        localctx = evParser.WorkContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 18, self.RULE_work)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 74
+            self.match(evParser.WORK)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class FlagContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def FLAG(self):
+            return self.getToken(evParser.FLAG, 0)
+
+        def getRuleIndex(self):
+            return evParser.RULE_flag
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterFlag" ):
+                listener.enterFlag(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitFlag" ):
+                listener.exitFlag(self)
+
+
+
+
+    def flag(self):
+
+        localctx = evParser.FlagContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 20, self.RULE_flag)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 76
+            self.match(evParser.FLAG)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class SysFlagContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def SYS_FLAG(self):
+            return self.getToken(evParser.SYS_FLAG, 0)
+
+        def getRuleIndex(self):
+            return evParser.RULE_sysFlag
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterSysFlag" ):
+                listener.enterSysFlag(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitSysFlag" ):
+                listener.exitSysFlag(self)
+
+
+
+
+    def sysFlag(self):
+
+        localctx = evParser.SysFlagContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 22, self.RULE_sysFlag)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 78
+            self.match(evParser.SYS_FLAG)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -828,7 +760,7 @@ class evParser ( Parser ):
         self.enterRule(localctx, 24, self.RULE_comment)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 92
+            self.state = 80
             self.match(evParser.COMMENT)
         except RecognitionException as re:
             localctx.exception = re
