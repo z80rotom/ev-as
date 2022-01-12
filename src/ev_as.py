@@ -34,17 +34,17 @@ class GDataManager:
             scenario2 = []
             scenario3 = []
             try:
-                with open(os.path.join(messagepath, "english_dp_scenario1.json", "r", encoding='utf-8')) as ifobj:
+                with open(os.path.join(messagepath, "english_dp_scenario1.json"), "r", encoding='utf-8') as ifobj:
                     data = json.load(ifobj)
                     for entry in data["labelDataArray"]:
                         labelName = entry["labelName"]
                         scenario1.append(labelName)
-                with open(os.path.join(messagepath, "english_dp_scenario2.json", "r", encoding='utf-8')) as ifobj:
+                with open(os.path.join(messagepath, "english_dp_scenario2.json"), "r", encoding='utf-8') as ifobj:
                     data = json.load(ifobj)
                     for entry in data["labelDataArray"]:
                         labelName = entry["labelName"]
                         scenario2.append(labelName)
-                with open(os.path.join(messagepath, "english_dp_scenario3.json", "r", encoding='utf-8')) as ifobj:
+                with open(os.path.join(messagepath, "english_dp_scenario3.json"), "r", encoding='utf-8') as ifobj:
                     data = json.load(ifobj)
                     for entry in data["labelDataArray"]:
                         labelName = entry["labelName"]
