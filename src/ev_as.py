@@ -30,34 +30,43 @@ class GDataManager:
         if cls.DISABLED_MSGS:
             return None
         if not cls.SCENARIO_MSGS:
-            scenario1 = []
-            scenario2 = []
-            scenario3 = []
+            dataFiles = ['dp_scenario1' ,
+                'dp_scenario2',
+                'dp_scenario3',
+                'dp_options',
+                'ss_report' ,
+                'dlp_underground' ,
+                'dp_tvshow',
+                'dlp_net_union_room',
+                'dp_trainer_msg_sub',
+                'dp_poffin_main',
+                'ss_fld_shop',
+                'dlp_gmstation',
+                'dlp_rotom_message',
+                'ss_fld_dressup',
+                'dp_net_communication',
+                'dp_contest',
+                'ss_net_net_btl',
+                'ss_btl_tower_main',
+                'ss_btl_tower_menu_ui_text',
+            ]
+            scenario_msgs = {}
+
             try:
-                with open(os.path.join(messagepath, "english_dp_scenario1.json"), "r", encoding='utf-8') as ifobj:
-                    data = json.load(ifobj)
-                    for entry in data["labelDataArray"]:
-                        labelName = entry["labelName"]
-                        scenario1.append(labelName)
-                with open(os.path.join(messagepath, "english_dp_scenario2.json"), "r", encoding='utf-8') as ifobj:
-                    data = json.load(ifobj)
-                    for entry in data["labelDataArray"]:
-                        labelName = entry["labelName"]
-                        scenario2.append(labelName)
-                with open(os.path.join(messagepath, "english_dp_scenario3.json"), "r", encoding='utf-8') as ifobj:
-                    data = json.load(ifobj)
-                    for entry in data["labelDataArray"]:
-                        labelName = entry["labelName"]
-                        scenario3.append(labelName)
+                for dateFile in dataFiles:
+                    ifpath = os.path.join(messagepath, "english_{}.json".format(dateFile))
+                    array = []
+                    with open(ifpath, "r", encoding='utf-8') as ifobj:
+                        data = json.load(ifobj)
+                        for entry in data["labelDataArray"]:
+                            labelName = entry["labelName"]
+                            array.append(labelName)
+                    scenario_msgs[dateFile] = array
             except FileNotFoundError as exc:
                 cls.DISABLED_MSGS = True
                 print("Warning: english files not found. Message validation will not be enabled: {}".format(exc))
                 return None
-            cls.SCENARIO_MSGS = {
-                'dp_scenario1' : scenario1,
-                'dp_scenario2' : scenario2,
-                'dp_scenario3' : scenario3
-            }
+            cls.SCENARIO_MSGS = scenario_msgs
         return cls.SCENARIO_MSGS    
 
 def jsonDumpUnity(tree, ofpath):
@@ -121,10 +130,30 @@ def validate_easy_obj_msg(cmd: EvCmd, strList: list, messagepath):
     if unlocalized_key not in scenarioMsgList[dataFile]:
         raise RuntimeError('Unknown message: {} passed to {} at {}:{}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
 
+def validate_add_custum_win_label(cmd: EvCmd, strList: list):
+    scenarioMsgList = GDataManager.getScenarioMsgList()
+    if scenarioMsgList is None:
+        return
+    msgIdx = cmd.args[0].data
+    msg = strList[msgIdx]
+    splitMsg = msg.split('%')
+    try:
+        dataFile = splitMsg[0]
+        unlocalized_key = splitMsg[1]
+    except IndexError:
+        return
+        # raise RuntimeError('Invalid msg: {} passed to {} at {}: {}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
+
+    if dataFile not in scenarioMsgList:
+        raise RuntimeError('Unknown datafile: {} passed to {} at {}:{}'.format(dataFile, cmd.cmdType.name, cmd.line, cmd.column))
+    if unlocalized_key not in scenarioMsgList[dataFile]:
+        raise RuntimeError('Unknown message: {} passed to {} at {}:{}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
+
 VALIDATE_TABLE = {
     EvCmdType._TALKMSG : validate_talk_msg,
     EvCmdType._TALK_KEYWAIT : validate_talk_keywait,
     EvCmdType._EASY_OBJ_MSG : validate_easy_obj_msg,
+    EvCmdType._ADD_CUSTUM_WIN_LABEL : validate_add_custum_win_label
 }
 
 def convertToUnity(ifpath, scripts, strList, messagepath):
@@ -241,7 +270,7 @@ def assemble_all(idfpath, ofpath, messagepath):
         parser = evParser(stream)
         tree = parser.prog()
 
-        assembler = evAssembler()
+        assembler = evAssembler(ifpath)
         walker = ParseTreeWalker()
         walker.walk(assembler, tree)
         unityTree = convertToUnity(ifpath, assembler.scripts, assembler.strTbl, messagepath)
@@ -266,6 +295,8 @@ def main():
         assemble(vargs.ifpath, vargs.ofpath, script, messagePath)
     else:
         assemble_all(vargs.ifpath, vargs.ofpath, messagePath)
+    
+    print("Assembly finished")
 
 if __name__ == "__main__":
     main()
