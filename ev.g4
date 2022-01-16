@@ -70,15 +70,15 @@ string_
    ;
 
 work
-   : '@' (name | number)
+   : '@' (NAME | NUMBER)
    ;
 
 flag
-   : '#' (name | number)
+   : '#' (NAME | NUMBER)
    ;
 
 sysFlag
-   : '$' (name | number)
+   : '$' (NAME | NUMBER)
    ;
 
 name

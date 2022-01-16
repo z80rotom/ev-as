@@ -12,35 +12,33 @@ else:
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\17")
-        buf.write("a\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b")
+        buf.write("[\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b")
         buf.write("\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16\t")
         buf.write("\16\3\2\5\2\36\n\2\3\2\6\2!\n\2\r\2\16\2\"\3\2\3\2\3\3")
         buf.write("\5\3(\n\3\3\3\5\3+\n\3\3\3\5\3.\n\3\3\4\3\4\3\4\3\5\3")
         buf.write("\5\3\5\3\6\3\6\3\6\3\6\7\6:\n\6\f\6\16\6=\13\6\5\6?\n")
         buf.write("\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\5\7H\n\7\3\b\3\b\3\t\3")
-        buf.write("\t\3\t\5\tO\n\t\3\n\3\n\3\n\5\nT\n\n\3\13\3\13\3\13\5")
-        buf.write("\13Y\n\13\3\f\3\f\3\r\3\r\3\16\3\16\3\16\2\2\17\2\4\6")
-        buf.write("\b\n\f\16\20\22\24\26\30\32\2\2\2a\2 \3\2\2\2\4\'\3\2")
-        buf.write("\2\2\6/\3\2\2\2\b\62\3\2\2\2\n\65\3\2\2\2\fG\3\2\2\2\16")
-        buf.write("I\3\2\2\2\20K\3\2\2\2\22P\3\2\2\2\24U\3\2\2\2\26Z\3\2")
-        buf.write("\2\2\30\\\3\2\2\2\32^\3\2\2\2\34\36\5\4\3\2\35\34\3\2")
-        buf.write("\2\2\35\36\3\2\2\2\36\37\3\2\2\2\37!\7\16\2\2 \35\3\2")
-        buf.write("\2\2!\"\3\2\2\2\" \3\2\2\2\"#\3\2\2\2#$\3\2\2\2$%\5\4")
-        buf.write("\3\2%\3\3\2\2\2&(\5\b\5\2\'&\3\2\2\2\'(\3\2\2\2(*\3\2")
-        buf.write("\2\2)+\5\6\4\2*)\3\2\2\2*+\3\2\2\2+-\3\2\2\2,.\5\32\16")
-        buf.write("\2-,\3\2\2\2-.\3\2\2\2.\5\3\2\2\2/\60\5\26\f\2\60\61\5")
-        buf.write("\n\6\2\61\7\3\2\2\2\62\63\5\26\f\2\63\64\7\3\2\2\64\t")
-        buf.write("\3\2\2\2\65>\7\4\2\2\66;\5\f\7\2\678\7\5\2\28:\5\f\7\2")
-        buf.write("9\67\3\2\2\2:=\3\2\2\2;9\3\2\2\2;<\3\2\2\2<?\3\2\2\2=")
-        buf.write(";\3\2\2\2>\66\3\2\2\2>?\3\2\2\2?@\3\2\2\2@A\7\6\2\2A\13")
-        buf.write("\3\2\2\2BH\5\30\r\2CH\5\20\t\2DH\5\22\n\2EH\5\24\13\2")
-        buf.write("FH\5\16\b\2GB\3\2\2\2GC\3\2\2\2GD\3\2\2\2GE\3\2\2\2GF")
-        buf.write("\3\2\2\2H\r\3\2\2\2IJ\7\r\2\2J\17\3\2\2\2KN\7\7\2\2LO")
-        buf.write("\5\26\f\2MO\5\30\r\2NL\3\2\2\2NM\3\2\2\2O\21\3\2\2\2P")
-        buf.write("S\7\b\2\2QT\5\26\f\2RT\5\30\r\2SQ\3\2\2\2SR\3\2\2\2T\23")
-        buf.write("\3\2\2\2UX\7\t\2\2VY\5\26\f\2WY\5\30\r\2XV\3\2\2\2XW\3")
-        buf.write("\2\2\2Y\25\3\2\2\2Z[\7\n\2\2[\27\3\2\2\2\\]\7\13\2\2]")
-        buf.write("\31\3\2\2\2^_\7\f\2\2_\33\3\2\2\2\r\35\"\'*-;>GNSX")
+        buf.write("\t\3\t\3\n\3\n\3\n\3\13\3\13\3\13\3\f\3\f\3\r\3\r\3\16")
+        buf.write("\3\16\3\16\2\2\17\2\4\6\b\n\f\16\20\22\24\26\30\32\2\3")
+        buf.write("\3\2\n\13\2X\2 \3\2\2\2\4\'\3\2\2\2\6/\3\2\2\2\b\62\3")
+        buf.write("\2\2\2\n\65\3\2\2\2\fG\3\2\2\2\16I\3\2\2\2\20K\3\2\2\2")
+        buf.write("\22N\3\2\2\2\24Q\3\2\2\2\26T\3\2\2\2\30V\3\2\2\2\32X\3")
+        buf.write("\2\2\2\34\36\5\4\3\2\35\34\3\2\2\2\35\36\3\2\2\2\36\37")
+        buf.write("\3\2\2\2\37!\7\16\2\2 \35\3\2\2\2!\"\3\2\2\2\" \3\2\2")
+        buf.write("\2\"#\3\2\2\2#$\3\2\2\2$%\5\4\3\2%\3\3\2\2\2&(\5\b\5\2")
+        buf.write("\'&\3\2\2\2\'(\3\2\2\2(*\3\2\2\2)+\5\6\4\2*)\3\2\2\2*")
+        buf.write("+\3\2\2\2+-\3\2\2\2,.\5\32\16\2-,\3\2\2\2-.\3\2\2\2.\5")
+        buf.write("\3\2\2\2/\60\5\26\f\2\60\61\5\n\6\2\61\7\3\2\2\2\62\63")
+        buf.write("\5\26\f\2\63\64\7\3\2\2\64\t\3\2\2\2\65>\7\4\2\2\66;\5")
+        buf.write("\f\7\2\678\7\5\2\28:\5\f\7\29\67\3\2\2\2:=\3\2\2\2;9\3")
+        buf.write("\2\2\2;<\3\2\2\2<?\3\2\2\2=;\3\2\2\2>\66\3\2\2\2>?\3\2")
+        buf.write("\2\2?@\3\2\2\2@A\7\6\2\2A\13\3\2\2\2BH\5\30\r\2CH\5\20")
+        buf.write("\t\2DH\5\22\n\2EH\5\24\13\2FH\5\16\b\2GB\3\2\2\2GC\3\2")
+        buf.write("\2\2GD\3\2\2\2GE\3\2\2\2GF\3\2\2\2H\r\3\2\2\2IJ\7\r\2")
+        buf.write("\2J\17\3\2\2\2KL\7\7\2\2LM\t\2\2\2M\21\3\2\2\2NO\7\b\2")
+        buf.write("\2OP\t\2\2\2P\23\3\2\2\2QR\7\t\2\2RS\t\2\2\2S\25\3\2\2")
+        buf.write("\2TU\7\n\2\2U\27\3\2\2\2VW\7\13\2\2W\31\3\2\2\2XY\7\f")
+        buf.write("\2\2Y\33\3\2\2\2\n\35\"\'*-;>G")
         return buf.getvalue()
 
 
@@ -543,13 +541,11 @@ class evParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def name(self):
-            return self.getTypedRuleContext(evParser.NameContext,0)
+        def NAME(self):
+            return self.getToken(evParser.NAME, 0)
 
-
-        def number(self):
-            return self.getTypedRuleContext(evParser.NumberContext,0)
-
+        def NUMBER(self):
+            return self.getToken(evParser.NUMBER, 0)
 
         def getRuleIndex(self):
             return evParser.RULE_work
@@ -569,24 +565,18 @@ class evParser ( Parser ):
 
         localctx = evParser.WorkContext(self, self._ctx, self.state)
         self.enterRule(localctx, 14, self.RULE_work)
+        self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 73
             self.match(evParser.T__4)
-            self.state = 76
-            self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [evParser.NAME]:
-                self.state = 74
-                self.name()
-                pass
-            elif token in [evParser.NUMBER]:
-                self.state = 75
-                self.number()
-                pass
+            self.state = 74
+            _la = self._input.LA(1)
+            if not(_la==evParser.NAME or _la==evParser.NUMBER):
+                self._errHandler.recoverInline(self)
             else:
-                raise NoViableAltException(self)
-
+                self._errHandler.reportMatch(self)
+                self.consume()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -603,13 +593,11 @@ class evParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def name(self):
-            return self.getTypedRuleContext(evParser.NameContext,0)
+        def NAME(self):
+            return self.getToken(evParser.NAME, 0)
 
-
-        def number(self):
-            return self.getTypedRuleContext(evParser.NumberContext,0)
-
+        def NUMBER(self):
+            return self.getToken(evParser.NUMBER, 0)
 
         def getRuleIndex(self):
             return evParser.RULE_flag
@@ -629,24 +617,18 @@ class evParser ( Parser ):
 
         localctx = evParser.FlagContext(self, self._ctx, self.state)
         self.enterRule(localctx, 16, self.RULE_flag)
+        self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 78
+            self.state = 76
             self.match(evParser.T__5)
-            self.state = 81
-            self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [evParser.NAME]:
-                self.state = 79
-                self.name()
-                pass
-            elif token in [evParser.NUMBER]:
-                self.state = 80
-                self.number()
-                pass
+            self.state = 77
+            _la = self._input.LA(1)
+            if not(_la==evParser.NAME or _la==evParser.NUMBER):
+                self._errHandler.recoverInline(self)
             else:
-                raise NoViableAltException(self)
-
+                self._errHandler.reportMatch(self)
+                self.consume()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -663,13 +645,11 @@ class evParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def name(self):
-            return self.getTypedRuleContext(evParser.NameContext,0)
+        def NAME(self):
+            return self.getToken(evParser.NAME, 0)
 
-
-        def number(self):
-            return self.getTypedRuleContext(evParser.NumberContext,0)
-
+        def NUMBER(self):
+            return self.getToken(evParser.NUMBER, 0)
 
         def getRuleIndex(self):
             return evParser.RULE_sysFlag
@@ -689,24 +669,18 @@ class evParser ( Parser ):
 
         localctx = evParser.SysFlagContext(self, self._ctx, self.state)
         self.enterRule(localctx, 18, self.RULE_sysFlag)
+        self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 83
+            self.state = 79
             self.match(evParser.T__6)
-            self.state = 86
-            self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [evParser.NAME]:
-                self.state = 84
-                self.name()
-                pass
-            elif token in [evParser.NUMBER]:
-                self.state = 85
-                self.number()
-                pass
+            self.state = 80
+            _la = self._input.LA(1)
+            if not(_la==evParser.NAME or _la==evParser.NUMBER):
+                self._errHandler.recoverInline(self)
             else:
-                raise NoViableAltException(self)
-
+                self._errHandler.reportMatch(self)
+                self.consume()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -746,7 +720,7 @@ class evParser ( Parser ):
         self.enterRule(localctx, 20, self.RULE_name)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 88
+            self.state = 82
             self.match(evParser.NAME)
         except RecognitionException as re:
             localctx.exception = re
@@ -787,7 +761,7 @@ class evParser ( Parser ):
         self.enterRule(localctx, 22, self.RULE_number)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 90
+            self.state = 84
             self.match(evParser.NUMBER)
         except RecognitionException as re:
             localctx.exception = re
@@ -828,7 +802,7 @@ class evParser ( Parser ):
         self.enterRule(localctx, 24, self.RULE_comment)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 92
+            self.state = 86
             self.match(evParser.COMMENT)
         except RecognitionException as re:
             localctx.exception = re

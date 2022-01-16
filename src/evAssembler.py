@@ -82,7 +82,7 @@ class evAssembler(evListener):
         )
     
     def enterWork(self, ctx: evParser.WorkContext):
-        argVal = str(ctx.getChild(1).getChild(0))
+        argVal = str(ctx.getChild(1))
 
         if argVal.isdigit():
             argVal = int(argVal)
@@ -101,7 +101,7 @@ class evAssembler(evListener):
             print("[Warning] line {}:{}:{} Invalid work: @{}".format(self.fileName, ctx.start.line, ctx.start.column, argVal))
 
     def enterFlag(self, ctx: evParser.FlagContext):
-        argVal = str(ctx.getChild(1).getChild(0))
+        argVal = str(ctx.getChild(1))
 
         if argVal.isdigit():
             argVal = int(argVal)
@@ -120,7 +120,7 @@ class evAssembler(evListener):
             print("[Warning] line {}:{}:{} Invalid Flag: #{}".format(self.fileName, ctx.start.line, ctx.start.column, argVal))
 
     def enterSysFlag(self, ctx: evParser.SysFlagContext):
-        argVal = str(ctx.getChild(1).getChild(0))
+        argVal = str(ctx.getChild(1))
 
         if argVal.isdigit():
             argVal = int(argVal)
