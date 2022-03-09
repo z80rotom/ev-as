@@ -257,7 +257,7 @@ def updateLabelDatas(path, lang, labelDatas):
                 break
         if found_entry:
             continue
-        arrayIndex = msbt_file.labelDataArray[-1].arrayIndex
+        arrayIndex = msbt_file.labelDataArray[-1].arrayIndex + 1
         labelData.labelIndex = arrayIndex
         labelData.arrayIndex = arrayIndex
         msbt_file.labelDataArray.append(labelData)
