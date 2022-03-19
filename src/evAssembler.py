@@ -167,9 +167,9 @@ class MacroAssembler:
             i = min(indices.keys())
             splitter = indices[i]
             indicator = None
-            if splitter == '\\n':
-                indicator = Indicator.ScrollPage
             if splitter == '\\r':
+                indicator = Indicator.ScrollPage
+            if splitter == '\\n':
                 indicator = Indicator.NewLine
             if splitter == '%':
                 if tagOpen:
