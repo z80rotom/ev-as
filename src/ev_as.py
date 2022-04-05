@@ -5,6 +5,7 @@ import glob
 from argparse import ArgumentParser
 
 import UnityPy
+import marshmallow
 
 from antlr4 import *
 from evAssembler import EvCmd, evAssembler
@@ -239,9 +240,13 @@ def updateLabelDatas(path, lang, labelDatas):
     for data_file in DATA_FILES:
         ifpath = os.path.join(path, "{}_{}.json".format(lang, data_file))
         with open(ifpath, "r", encoding='utf-8') as ifobj:
-            msbt_file = MsbtFile.Schema().loads(ifobj.read())
+            try:
+                msbt_file = MsbtFile.Schema().loads(ifobj.read())
+            except marshmallow.exceptions.ValidationError as exc:
+                print("Failed to load: {}. Unable to update message files".format(ifpath))
+                print(exc)
+                return
             msbt_files[data_file] = msbt_file
-    
     for scriptMessage, labelData in labelDatas.items():
         splitMsg = scriptMessage.split('%')
         dataFile = splitMsg[0]
@@ -305,7 +310,7 @@ def assemble_all():
     for ifpath in glob.glob("scripts/*.ev"):
         basename = os.path.basename(ifpath)
         basename = os.path.splitext(basename)[0]
-        input_stream = FileStream(ifpath)
+        input_stream = FileStream(ifpath, encoding='utf-8')
         lexer = evLexer(input_stream)
         stream = CommonTokenStream(lexer)
         parser = evParser(stream)

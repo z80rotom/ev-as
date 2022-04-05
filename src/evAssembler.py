@@ -152,7 +152,7 @@ class MacroAssembler:
         origText = origText.replace('\r\n', '\\n')
         origText = origText.replace('\n', '\\n') # Just in case
         text = origText
-        splitters = ['\\n', '\\r', '%']
+        splitters = ['\\n', '\\r', '\\f', '%']
         items = {}
         indicators = {}
         lastIndex = 0
@@ -170,6 +170,8 @@ class MacroAssembler:
             if splitter == '\\r':
                 indicator = Indicator.ScrollPage
             if splitter == '\\n':
+                indicator = Indicator.NewLine
+            if splitter == '\\f':
                 indicator = Indicator.NewLine
             if splitter == '%':
                 if tagOpen:
