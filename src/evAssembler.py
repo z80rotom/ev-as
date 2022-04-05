@@ -276,7 +276,7 @@ class MacroAssembler:
                     len(tagDataArray),
                     0.0,
                     "",
-                    calculateStrWidth(item)
+                    -1.0
                 ))
                 tagDataArray.append(TagData(
                     tagIndex,
@@ -295,7 +295,7 @@ class MacroAssembler:
                     -1,
                     0.0,
                     item,
-                    -1.0 # TODO: Need to calculate strwidth
+                    calculateStrWidth(item)
                 ))
 
         return LabelData(
