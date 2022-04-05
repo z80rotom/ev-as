@@ -49,6 +49,7 @@ class EvMacro:
 
 class Indicator(IntEnum):
     ScrollPage = auto()
+    ScrollLine = auto()
     NewLine = auto()
     TagStart = auto()
     TagEnd = auto()
@@ -175,7 +176,7 @@ class MacroAssembler:
             if splitter == '\\n':
                 indicator = Indicator.NewLine
             if splitter == '\\f':
-                indicator = Indicator.NewLine
+                indicator = Indicator.ScrollLine
             if splitter == '%':
                 if tagOpen:
                     indicator = Indicator.TagEnd
@@ -243,6 +244,15 @@ class MacroAssembler:
                     item,
                     calculateStrWidth(item)
                 ))
+            if indicator == Indicator.ScrollLine:
+                wordDataArray.append(WordData(
+                    WordDataPatternID.Event,
+                    MsgEventID.ScrollLine,
+                    -1,
+                    0.0,
+                    item,
+                    calculateStrWidth(item)
+                ))                
             if indicator == Indicator.ScrollPage:
                 wordDataArray.append(WordData(
                     WordDataPatternID.Event,
