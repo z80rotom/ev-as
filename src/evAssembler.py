@@ -151,6 +151,9 @@ class MacroAssembler:
     def parseText(self, origText):
         origText = origText.replace('\r\n', '\\n')
         origText = origText.replace('\n', '\\n') # Just in case
+        # Don't want things ending with these seperators, nasty business
+        if origText.endswith('\\r'):
+            origText = origText[:-2]
         text = origText
         splitters = ['\\n', '\\r', '\\f', '%']
         items = {}
