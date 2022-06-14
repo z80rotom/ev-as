@@ -3,8 +3,11 @@ import struct
 import json
 import glob
 from argparse import ArgumentParser
+from copy import deepcopy
+import random
 
 import UnityPy
+from UnityPy.files.ObjectReader import ObjectReader
 import marshmallow
 
 from antlr4 import *
@@ -286,19 +289,93 @@ def assemble(ifpath, ofpath, script):
     unityTree = convertToUnity(assembler.scripts, assembler.strTbl)
     repackUnity(ofpath, script, unityTree)
 
-def repackUnityAll(ifpath, ofpath, scripts):
+
+def generate_path_id(objects):
+    while True:
+        uid = random.randint(-(2 ** 16), 2 ** 16 - 1)
+        if uid not in objects:
+            return uid
+
+class Helper:
+    pass
+
+def add_scripts(ifpath, ofpath, baseScriptName, newScriptNames):
+    with open(ifpath, "rb") as ifobj:
+        bundle = UnityPy.load(ifpath)
+
+        baseObjects = {}
+        pathIDs = {}
+        for i, baseObject in enumerate(bundle.objects):
+                if baseObject.type.name == "MonoBehaviour":
+                    data = baseObject.read()
+                    if baseObject.serialized_type.nodes:
+                            tree = baseObject.read_typetree()
+                            if data.name == baseScriptName:
+                                for iScriptName in range(len(newScriptNames)):
+                                    raw_dict = {}
+                                    raw_dict.update(baseObject.__dict__)
+                                    raw_dict["path_id"] = generate_path_id(bundle.objects)
+                                    pathIDs[raw_dict["path_id"]] = newScriptNames[iScriptName]
+                                    
+                                    newEvScript = Helper()
+                                    newEvScript.__dict__ = raw_dict
+                                    newEvScript.__class__ = ObjectReader
+
+                                    newEvScript.assets_file.objects[newEvScript.path_id] = newEvScript
+
+                                    bundle.objects.append(newEvScript)
+
+    with open(ofpath, "wb") as ofobj:
+        # Thanks Aldo796
+        ofobj.write(bundle.file.save(packer=(64,2)))
+
+    # print(pathIDs)
+    with open(ofpath, "rb") as ifobj:
+        bundle = UnityPy.load(ofpath)
+        for baseObject in bundle.objects:
+            # print(baseObject)
+            # print(baseObject.path_id)
+            if baseObject.path_id in pathIDs:
+                data = baseObject.read()
+                data.name = pathIDs[baseObject.path_id]
+                tree = baseObject.read_typetree()
+                tree["m_Name"] = pathIDs[baseObject.path_id]
+                baseObject.save_typetree(tree)
+    
+    with open(ofpath, "wb") as ofobj:
+        # Thanks Aldo796
+        ofobj.write(bundle.file.save(packer=(64,2)))
+
+def getMissingScripts(ifpath, scripts):
+    names = []
     with open(ifpath, "rb") as ifobj:
             bundle = UnityPy.load(ifpath)
 
             for obj in bundle.objects:
                 if obj.type.name == "MonoBehaviour":
                     data = obj.read()
-                    if obj.serialized_type.nodes:
-                            tree = obj.read_typetree()
-                            if data.name in scripts:
-                                unityTree = scripts[data.name]
-                                tree.update(unityTree)
-                                obj.save_typetree(tree)
+                    names.append(data.name)
+    missingNames = []
+    for scriptName in scripts.keys():
+        if scriptName not in names:
+            missingNames.append(scriptName)
+    return missingNames
+
+def repackUnityAll(ifpath, ofpath, scripts):
+    missingScripts = getMissingScripts(ifpath, scripts)
+    add_scripts(ifpath, ofpath, "c01", missingScripts)
+
+    bundle = UnityPy.load(ofpath)
+
+    for obj in bundle.objects:
+        if obj.type.name == "MonoBehaviour":
+            data = obj.read()
+            if obj.serialized_type.nodes:
+                    tree = obj.read_typetree()
+                    if data.name in scripts:
+                        unityTree = scripts[data.name]
+                        tree.update(unityTree)
+                        obj.save_typetree(tree)
     
     with open(ofpath, "wb") as ofobj:
         # Thanks Aldo796
@@ -334,6 +411,7 @@ def main():
     # vargs = parser.parse_args()
     # assemble(vargs.ifpath, vargs.ofpath, vargs.script)
     assemble_all()
+    # add_script("Dpr/ev_script", "bin/ev_script", "c01", ["health_check"])
     print("Assembly finished")
 
 if __name__ == "__main__":
