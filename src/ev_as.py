@@ -1,3 +1,4 @@
+from email.mime import base
 import os
 import struct
 import json
@@ -305,7 +306,11 @@ def add_scripts(ifpath, ofpath, baseScriptName, newScriptNames):
 
         baseObjects = {}
         pathIDs = {}
+        monoscripts = {}
         for i, baseObject in enumerate(bundle.objects):
+                if baseObject.type.name == "MonoScript":
+                    data = baseObject.read()
+                    monoscripts[data.name] = baseObject.path_id
                 if baseObject.type.name == "MonoBehaviour":
                     data = baseObject.read()
                     if baseObject.serialized_type.nodes:
@@ -330,17 +335,42 @@ def add_scripts(ifpath, ofpath, baseScriptName, newScriptNames):
         ofobj.write(bundle.file.save(packer=(64,2)))
 
     # print(pathIDs)
+    preloadSize = 2
     with open(ofpath, "rb") as ifobj:
         bundle = UnityPy.load(ofpath)
         for baseObject in bundle.objects:
+            if baseObject.type.name == "AssetBundle":
+                data = baseObject.read()
+                tree = baseObject.read_typetree()
+                idx = len(tree["m_PreloadTable"])
+                for i, pathID in enumerate(pathIDs.keys()):
+                    containerKey = "assets/evscriptdata/eventasset/{}.asset".format(pathIDs[pathID])
+                    tree["m_PreloadTable"].append({
+                        'm_FileID': 0, 'm_PathID': monoscripts["EvData"]
+                    })
+                    tree["m_PreloadTable"].append({
+                        'm_FileID': 0, 'm_PathID': pathID
+                    })
+                    tree["m_Container"].append((containerKey, {
+                        'preloadIndex': idx + i * preloadSize, 
+                        'preloadSize': preloadSize, 
+                        'asset': {
+                            'm_FileID': 0, 
+                            'm_PathID': pathID
+                        }
+                    }))
+                    baseObject.save_typetree(tree)
+                # print(data)
+                # print(tree)
             # print(baseObject)
             # print(baseObject.path_id)
-            if baseObject.path_id in pathIDs:
-                data = baseObject.read()
-                data.name = pathIDs[baseObject.path_id]
-                tree = baseObject.read_typetree()
-                tree["m_Name"] = pathIDs[baseObject.path_id]
-                baseObject.save_typetree(tree)
+            else:
+                if baseObject.path_id in pathIDs:
+                    data = baseObject.read()
+                    data.name = pathIDs[baseObject.path_id]
+                    tree = baseObject.read_typetree()
+                    tree["m_Name"] = pathIDs[baseObject.path_id]
+                    baseObject.save_typetree(tree)
     
     with open(ofpath, "wb") as ofobj:
         # Thanks Aldo796
