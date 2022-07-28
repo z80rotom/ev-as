@@ -57,6 +57,11 @@ class ForceGrmID(IntEnum):
     Masculine = 3
     InitialCap = 4
 
+class TagID(IntEnum):
+    Default = 0
+    PokeType = 3
+    Number = 4
+
 @dataclass
 class UnityGameObject:
     m_FileID: int

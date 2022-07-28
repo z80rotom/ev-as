@@ -7,7 +7,7 @@ from UnityPy.streams import EndianBinaryReader, EndianBinaryWriter
 
 from ev_argtype import EvArgType
 from ev_macro import EvMacroType
-from msbt import ForceGrmID, GroupTagID, LabelData, MsgEventID, StyleInfo, TagData, TagPatternID, WordData, WordDataPatternID
+import msbt
 if __name__ is not None and "." in __name__:
     from .evParser import evParser
 else:
@@ -22,6 +22,11 @@ from ev_sys_flag import EvSysFlag
 MAX_WORK = 500
 MAX_FLAG = 4000
 MAX_SYS_FLAG = 1000
+
+MACRO_NAME_CMD_TABLE = {
+    EvCmdType._POKE_TYPE_NAME : msbt.TagID.PokeType,
+    EvCmdType._NUMBER_NAME : msbt.TagID.Number
+}
 
 @dataclass
 class EvArg:
@@ -156,11 +161,10 @@ class MacroAssembler:
         if origText.endswith('\\r'):
             origText = origText[:-2]
         text = origText
-        splitters = ['\\n', '\\r', '\\f', '%']
+        splitters = ['\\n', '\\r', '\\f', '{', '}']
         items = {}
         indicators = {}
         lastIndex = 0
-        tagOpen = False
         while True:
             indices = {}
             for splitter in splitters:
@@ -177,13 +181,10 @@ class MacroAssembler:
                 indicator = Indicator.NewLine
             if splitter == '\\f':
                 indicator = Indicator.ScrollLine
-            if splitter == '%':
-                if tagOpen:
-                    indicator = Indicator.TagEnd
-                    tagOpen = False
-                else:
-                    indicator = Indicator.TagStart
-                    tagOpen = True
+            if splitter == '}':
+                indicator = Indicator.TagEnd
+            if splitter == '{':
+                indicator = Indicator.TagStart
             indicators[text.index(splitter)+lastIndex] = indicator
             items[text.index(splitter)+lastIndex] = text[:text.index(splitter)]
             lastIndex = text.index(splitter)+lastIndex
@@ -202,7 +203,7 @@ class MacroAssembler:
             "indicators" : indicators
         }
 
-    def genLabelData(self, labelName, text):
+    def genLabelData(self, labelName, text, tags):
         TAG_COMMANDS = {
             "PLAYER",
             "RIVAL",
@@ -224,8 +225,8 @@ class MacroAssembler:
             # ACCE_NAME
             # IMC_BG_NAME
         }
-        styleInfo = StyleInfo.default()
-        attributeValueArray = LabelData.defaultAttributeValueArray()
+        styleInfo = msbt.StyleInfo.default()
+        attributeValueArray = msbt.LabelData.defaultAttributeValueArray()
         tagDataArray = []
         wordDataArray = []
 
@@ -236,36 +237,36 @@ class MacroAssembler:
             item: str = items[pos]
             indicator = indicators[pos]
             if indicator == Indicator.NewLine:
-                wordDataArray.append(WordData(
-                    WordDataPatternID.Event,
-                    MsgEventID.NewLine,
+                wordDataArray.append(msbt.WordData(
+                    msbt.WordDataPatternID.Event,
+                    msbt.MsgEventID.NewLine,
                     -1,
                     0.0,
                     item,
                     calculateStrWidth(item)
                 ))
             if indicator == Indicator.ScrollLine:
-                wordDataArray.append(WordData(
-                    WordDataPatternID.Event,
-                    MsgEventID.ScrollLine,
+                wordDataArray.append(msbt.WordData(
+                    msbt.WordDataPatternID.Event,
+                    msbt.MsgEventID.ScrollLine,
                     -1,
                     0.0,
                     item,
                     calculateStrWidth(item)
                 ))                
             if indicator == Indicator.ScrollPage:
-                wordDataArray.append(WordData(
-                    WordDataPatternID.Event,
-                    MsgEventID.ScrollPage,
+                wordDataArray.append(msbt.WordData(
+                    msbt.WordDataPatternID.Event,
+                    msbt.MsgEventID.ScrollPage,
                     -1,
                     0.0,
                     item,
                     calculateStrWidth(item)
                 ))
             if indicator == Indicator.TagStart:
-                wordDataArray.append(WordData(
-                    WordDataPatternID.Str,
-                    MsgEventID.NONE,
+                wordDataArray.append(msbt.WordData(
+                    msbt.WordDataPatternID.Str,
+                    msbt.MsgEventID.NONE,
                     -1,
                     0.0,
                     item,
@@ -280,35 +281,38 @@ class MacroAssembler:
                 # This tag index seems to be the index into the
                 # tagData array whereas the other tagIndex is the 
                 # 
-                wordDataArray.append(WordData(
-                    WordDataPatternID.WordTag,
-                    MsgEventID.NONE,
+                wordDataArray.append(msbt.WordData(
+                    msbt.WordDataPatternID.WordTag,
+                    msbt.MsgEventID.NONE,
                     len(tagDataArray),
                     0.0,
                     "",
                     -1.0
                 ))
-                tagDataArray.append(TagData(
+                tagID = msbt.TagID.Default
+                if tagIndex in tags:
+                    tagID = tags[tagIndex]
+                tagDataArray.append(msbt.TagData(
                     tagIndex,
-                    GroupTagID.Name,
-                    tagIndex, #?
-                    TagPatternID.Word,
+                    msbt.GroupTagID.Name,
+                    tagID,
+                    msbt.TagPatternID.Word,
                     0,
                     0,
                     [],
-                    ForceGrmID.NONE
+                    msbt.ForceGrmID.NONE
                 ))
             if indicator == Indicator.End:
-                wordDataArray.append(WordData(
-                    WordDataPatternID.Str,
-                    MsgEventID.End,
+                wordDataArray.append(msbt.WordData(
+                    msbt.WordDataPatternID.Str,
+                    msbt.MsgEventID.End,
                     -1,
                     0.0,
                     item,
                     calculateStrWidth(item)
                 ))
 
-        return LabelData(
+        return msbt.LabelData(
             0,
             0,
             labelName.data,
@@ -318,7 +322,7 @@ class MacroAssembler:
             wordDataArray
         )
 
-    def processTextMacro(self, cmdType, macro, commands, strTbl):
+    def processTextMacro(self, cmdType, macro, commands, strTbl, tags):
         # TODO: Add a list of valid msg files
         try:
             msgFile: EvArg = macro.args[0]
@@ -347,7 +351,7 @@ class MacroAssembler:
         # if strVal in self.msg_keys:
         #    raise RuntimeError("EvMacro: {}. Label `{}` is already used at {}:{}:{}".format(macro.cmdType.name, strVal, self.fileName, text.line, text.column))
         macroCommands = []
-        labelData = self.genLabelData(label, text)
+        labelData = self.genLabelData(label, text, tags)
 
         if strVal not in strTbl:
             strTbl.append(strVal)
@@ -363,7 +367,7 @@ class MacroAssembler:
         commands.extend(macroCommands)
         return len(macroCommands)
 
-    def process(self, macro, commands, strTbl):
+    def process(self, macro, commands, strTbl, tags):
         if macro.cmdType == EvMacroType.Invalid:
             raise RuntimeError("Invalid EvCmd or EvMacro: {} at {}:{}:{}".format(macro, self.fileName, macro.line, macro.column))
         textMacroMap = {
@@ -375,7 +379,7 @@ class MacroAssembler:
 
         if macro.cmdType in textMacroMap:
             evCmdType = textMacroMap[macro.cmdType]
-            return self.processTextMacro(evCmdType, macro, commands, strTbl)
+            return self.processTextMacro(evCmdType, macro, commands, strTbl, tags)
 
         raise RuntimeError("Invalid EvMacro: {} at {}:{}:{}".format(macro, self.fileName, macro.line, macro.column))
 
@@ -389,6 +393,7 @@ class evAssembler(evListener):
         self.strTbl = []
         self.currCmdIdx = -1
         self.writer = EndianBinaryWriter()
+        self.tags = {}
 
     def enterLbl(self, ctx: evParser.LblContext):
         lbl = ctx.getChild(0).getChild(0)
@@ -401,12 +406,13 @@ class evAssembler(evListener):
         self.currentLabel = lblName
         self.scripts[self.currentLabel] = []
         self.currCmdIdx = -1
+        self.tags = {}
 
     # Enter a parse tree produced by evParser#instruction.
     def enterInstruction(self, ctx:evParser.InstructionContext):
         name = str(ctx.getChild(0).getChild(0))
         if self.macro.isValid():
-            self.currCmdIdx += self.macroAssembler.process(self.macro, self.scripts[self.currentLabel], self.strTbl)
+            self.currCmdIdx += self.macroAssembler.process(self.macro, self.scripts[self.currentLabel], self.strTbl, self.tags)
             self.macro = EvMacro(EvMacroType.Invalid, [], ctx.start.line, ctx.start.column)
 
         if hasattr(EvMacroType, name):
@@ -435,7 +441,11 @@ class evAssembler(evListener):
                 EvArg(EvArgType.Value, argVal, ctx.start.line, ctx.start.column)
             )
         else:
-            self.scripts[self.currentLabel][self.currCmdIdx].args.append(
+            evCmd = self.scripts[self.currentLabel][self.currCmdIdx]
+            if evCmd.cmdType in MACRO_NAME_CMD_TABLE:
+                tagIndex = argVal
+                self.tags[tagIndex] = MACRO_NAME_CMD_TABLE[evCmd.cmdType]
+            evCmd.args.append(
                 EvArg(EvArgType.Value, argVal, ctx.start.line, ctx.start.column)
             )
     

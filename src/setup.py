@@ -12,7 +12,7 @@ build_exe_options = {"excludes": ["tkinter", "PyQt4.QtSql", "sqlite3",
 
 setup(
         name = "ev-as",
-        version = "1.0",
+        version = "1.1",
         options = {"build_exe": build_exe_options},
         description = "Pre-Compiled version of ev-as",
         executables = [Executable("ev_parse.py"), Executable("ev_as.py")])
