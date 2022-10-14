@@ -1,6 +1,7 @@
 from enum import IntEnum, auto
 import struct
 from dataclasses import dataclass
+import sys
 
 from antlr4 import *
 from UnityPy.streams import EndianBinaryReader, EndianBinaryWriter
@@ -384,7 +385,7 @@ class MacroAssembler:
         raise RuntimeError("Invalid EvMacro: {} at {}:{}:{}".format(macro, self.fileName, macro.line, macro.column))
 
 class evAssembler(evListener):
-    def __init__(self, fileName):
+    def __init__(self, fileName, flags=None, works=None, sysflags=None):
         self.fileName = fileName
         self.macro = EvMacro(EvMacroType.Invalid, [], 0, 0)
         self.macroAssembler = MacroAssembler(fileName)
@@ -394,6 +395,21 @@ class evAssembler(evListener):
         self.currCmdIdx = -1
         self.writer = EndianBinaryWriter()
         self.tags = {}
+        self.skipEntry = False
+        if flags is None:
+            self.flags = {}
+        else:
+            self.flags = flags
+
+        if works is None:
+            self.works = {}
+        else:
+            self.works = works
+
+        if sysflags is None:
+            self.sysflags = {}
+        else:
+            self.sysflags = sysflags
 
     def enterLbl(self, ctx: evParser.LblContext):
         lbl = ctx.getChild(0).getChild(0)
@@ -429,7 +445,36 @@ class evAssembler(evListener):
         self.scripts[self.currentLabel].append(evCmd)
         self.currCmdIdx += 1
 
+    def enterDefine(self, ctx: evParser.DefineContext):
+        work = ctx.work()
+        flag = ctx.flag()
+        sysflag = ctx.sysFlag()
+        number = ctx.number()
+
+        if work is not None:
+            key = str(work.getChild(1)).upper()
+            value = int(str(number.getChild(0)))
+            if value > MAX_WORK:
+                raise RuntimeError("Invalid work definition: @{}. {} greater than max work value {} at {}:{}:{}".format(key, value, MAX_WORK, self.fileName, ctx.start.line, ctx.start.column))
+            self.works[key] = value
+        if flag is not None:
+            key = str(flag.getChild(1)).upper()
+            value = int(str(number.getChild(0)))
+            if value > MAX_FLAG:
+                raise RuntimeError("Invalid flag definition: #{}. {} greater than max flag value {} at {}:{}:{}".format(key, value, MAX_FLAG, self.fileName, ctx.start.line, ctx.start.column))
+            self.flags[key] = value
+        if sysflag is not None:
+            key = str(sysflag.getChild(1)).upper()
+            value = int(str(number.getChild(0)))
+            if value > MAX_SYS_FLAG:
+                raise RuntimeError("Invalid SysFlag definition: ${}. {} greater than max sysflag value {} at {}:{}:{}".format(key, value, MAX_SYS_FLAG, self.fileName, ctx.start.line, ctx.start.column))
+            self.sysflags[key] = value
+        self.skipEntry = True
+
     def enterNumber(self, ctx: evParser.NumberContext):
+        if self.skipEntry:
+            self.skipEntry = False
+            return
         argVal = encode_float(float(str(ctx.getChild(0))))
         try:
             self.writer.write_int(argVal)
@@ -450,6 +495,8 @@ class evAssembler(evListener):
             )
     
     def enterWork(self, ctx: evParser.WorkContext):
+        if self.skipEntry:
+            return
         argVal = str(ctx.getChild(1))
 
         if argVal.isdigit():
@@ -458,6 +505,8 @@ class evAssembler(evListener):
             argVal = argVal.upper()
             if hasattr(EvWork, argVal):
                 argVal = getattr(EvWork, argVal)
+            elif argVal in self.works:
+                argVal = self.works[argVal]
             else:
                 raise RuntimeError("Unknown work: @{}. Cannot convert to number {}:{}:{}".format(argVal, self.fileName, ctx.start.line, ctx.start.column))
 
@@ -474,6 +523,8 @@ class evAssembler(evListener):
             print("[Warning] line {}:{}:{} Invalid work: @{}".format(self.fileName, ctx.start.line, ctx.start.column, argVal))
 
     def enterFlag(self, ctx: evParser.FlagContext):
+        if self.skipEntry:
+            return
         argVal = str(ctx.getChild(1))
 
         if argVal.isdigit():
@@ -482,6 +533,8 @@ class evAssembler(evListener):
             argVal = argVal.upper()
             if hasattr(EvFlag, argVal):
                 argVal = getattr(EvFlag, argVal)
+            elif argVal in self.flags:
+                argVal = self.flags[argVal]
             else:
                 raise RuntimeError("Unknown Flag: #{}. Cannot convert to number {}:{}:{}".format(argVal, self.fileName, ctx.start.line, ctx.start.column))
 
@@ -498,6 +551,8 @@ class evAssembler(evListener):
             print("[Warning] line {}:{}:{} Invalid Flag: #{}".format(self.fileName, ctx.start.line, ctx.start.column, argVal))
 
     def enterSysFlag(self, ctx: evParser.SysFlagContext):
+        if self.skipEntry:
+            return
         argVal = str(ctx.getChild(1))
 
         if argVal.isdigit():
@@ -506,6 +561,8 @@ class evAssembler(evListener):
             argVal = argVal.upper()
             if hasattr(EvSysFlag, argVal):
                 argVal = getattr(EvSysFlag, argVal)
+            elif argVal in self.sysflags:
+                argVal = self.sysflags[argVal]
             else:
                 raise RuntimeError("Unknown SysFlag: ${}. Cannot convert to number {}:{}".format(argVal, ctx.start.line, ctx.start.column))
 

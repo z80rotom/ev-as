@@ -44,6 +44,15 @@ class evListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by evParser#define.
+    def enterDefine(self, ctx:evParser.DefineContext):
+        pass
+
+    # Exit a parse tree produced by evParser#define.
+    def exitDefine(self, ctx:evParser.DefineContext):
+        pass
+
+
     # Enter a parse tree produced by evParser#expressionlist.
     def enterExpressionlist(self, ctx:evParser.ExpressionlistContext):
         pass

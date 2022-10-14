@@ -42,7 +42,8 @@ prog
    ;
 
 line
-   : lbl? (instruction)? comment?
+   : define? comment?
+   | lbl? (instruction)? comment?
    ;
 
 instruction
@@ -51,6 +52,12 @@ instruction
 
 lbl
    : name ':'
+   ;
+
+define
+   : '.define' flag number
+   | '.define' sysFlag number
+   | '.define' work number
    ;
 
 expressionlist

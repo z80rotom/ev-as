@@ -1,3 +1,4 @@
+from copy import copy
 import os
 import struct
 import json
@@ -304,19 +305,44 @@ def repackUnityAll(ifpath, ofpath, scripts):
         # Thanks Aldo796
         ofobj.write(bundle.file.save(packer=(64,2)))
 
+def load_definitions():
+    ifpath = "scripts/global_defines.ev"
+    input_stream = FileStream(ifpath, encoding='utf-8')
+    lexer = evLexer(input_stream)
+    stream = CommonTokenStream(lexer)
+    parser = evParser(stream)
+    tree = parser.prog()
+
+    assembler = evAssembler(ifpath)
+    walker = ParseTreeWalker()
+    walker.walk(assembler, tree)
+
+    return assembler
+
 def assemble_all():
     scripts = {}
     labelDatas = {}
+    flags = {}
+    works = {}
+    sysflags = {}
+    if os.path.exists("scripts/global_defines.ev"):
+        assembler = load_definitions()
+        flags = assembler.flags
+        works = assembler.works
+        sysflags = assembler.sysflags
     for ifpath in glob.glob("scripts/*.ev"):
+        # Special file with special behaviour
         basename = os.path.basename(ifpath)
         basename = os.path.splitext(basename)[0]
+        if basename == "global_defines.ev":
+            continue
         input_stream = FileStream(ifpath, encoding='utf-8')
         lexer = evLexer(input_stream)
         stream = CommonTokenStream(lexer)
         parser = evParser(stream)
         tree = parser.prog()
 
-        assembler = evAssembler(ifpath)
+        assembler = evAssembler(ifpath, flags=copy(flags), works=copy(works), sysflags=copy(sysflags))
         walker = ParseTreeWalker()
         walker.walk(assembler, tree)
         unityTree = convertToUnity(ifpath, assembler.scripts, assembler.strTbl)
