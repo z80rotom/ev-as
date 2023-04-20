@@ -6,6 +6,7 @@ import glob
 from argparse import ArgumentParser
 
 import UnityPy
+from gdatamanger import DATA_FILES
 import marshmallow
 
 from antlr4 import *
@@ -17,156 +18,18 @@ from ev_argtype import EvArgType
 from ev_cmd import EvCmdType
 from function_definitions import FunctionDefinition
 from msbt import MsbtFile
-
-DATA_FILES =  ['dp_scenario1',
-    'dp_scenario2',
-    'dp_scenario3',
-    'dp_options',
-    'ss_report' ,
-    'dlp_underground' ,
-    'dp_tvshow',
-    'dlp_net_union_room',
-    'dp_trainer_msg_sub',
-    'dp_poffin_main',
-    'ss_fld_shop',
-    'dlp_gmstation',
-    'dlp_rotom_message',
-    'ss_fld_dressup',
-    'dp_net_communication',
-    'dp_contest',
-    'ss_net_net_btl',
-    'ss_btl_tower_main',
-    'ss_btl_tower_menu_ui_text',
-]
-
-class GDataManager:
-    SCENARIO_MSGS = None
-    DISABLED_MSGS = False
-
-    @classmethod
-    def getMoveById(cls, moveId):
-        move_list = cls.getMoveList()
-        return move_list[moveId]
-
-    @classmethod
-    def getScenarioMsgList(cls):
-        if cls.DISABLED_MSGS:
-            return None
-        if not cls.SCENARIO_MSGS:
-            scenario_msgs = {}
-
-            try:
-                for dateFile in DATA_FILES:
-                    ifpath = "AssetFolder/english_Export/english_{}.json".format(dateFile)
-                    array = []
-                    with open(ifpath, "r", encoding='utf-8') as ifobj:
-                        data = json.load(ifobj)
-                        for entry in data["labelDataArray"]:
-                            labelName = entry["labelName"]
-                            array.append(labelName)
-                    scenario_msgs[dateFile] = array
-            except FileNotFoundError as exc:
-                cls.DISABLED_MSGS = True
-                print("Warning: english files not found. Message validation will not be enabled: {}".format(exc))
-                return None
-            cls.SCENARIO_MSGS = scenario_msgs
-        return cls.SCENARIO_MSGS    
+from validator import Validator
 
 def jsonDumpUnity(tree, ofpath):
     with open(ofpath, "w") as ofobj:
         json.dump(tree, ofobj, indent=4)
 
-def validate_talk_msg(cmd: EvCmd, strList):
-    return
-    scenarioMsgList = GDataManager.getScenarioMsgList()
-    if scenarioMsgList is None:
-        return
-    msgIdx = cmd.args[0].data
-    msg = strList[msgIdx]
-    splitMsg = msg.split('%')
-    try:
-        dataFile = splitMsg[0]
-        unlocalized_key = splitMsg[1]
-    except IndexError:
-        return
-        # raise RuntimeError('Invalid msg: {} passed to {} at {}: {}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
-
-    if dataFile not in scenarioMsgList:
-        raise RuntimeError('Unknown datafile: {} passed to {} at {}:{}'.format(dataFile, cmd.cmdType.name, cmd.line, cmd.column))
-    if unlocalized_key not in scenarioMsgList[dataFile]:
-        raise RuntimeError('Unknown message: {} passed to {} at {}:{}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
-
-def validate_talk_keywait(cmd: EvCmd, strList: list):
-    return
-    scenarioMsgList = GDataManager.getScenarioMsgList()
-    if scenarioMsgList is None:
-        return
-    msgIdx = cmd.args[0].data
-    msg = strList[msgIdx]
-    splitMsg = msg.split('%')
-    try:
-        dataFile = splitMsg[0]
-        unlocalized_key = splitMsg[1]
-    except IndexError:
-        return
-        # raise RuntimeError('Invalid msg: {} passed to {} at {}: {}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
-
-    if dataFile not in scenarioMsgList:
-        raise RuntimeError('Unknown datafile: {} passed to {} at {}:{}'.format(dataFile, cmd.cmdType.name, cmd.line, cmd.column))
-    if unlocalized_key not in scenarioMsgList[dataFile]:
-        raise RuntimeError('Unknown message: {} passed to {} at {}:{}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
-
-def validate_easy_obj_msg(cmd: EvCmd, strList: list):
-    return
-    scenarioMsgList = GDataManager.getScenarioMsgList()
-    if scenarioMsgList is None:
-        return
-    msgIdx = cmd.args[0].data
-    msg = strList[msgIdx]
-    splitMsg = msg.split('%')
-    try:
-        dataFile = splitMsg[0]
-        unlocalized_key = splitMsg[1]
-    except IndexError:
-        return
-        # raise RuntimeError('Invalid msg: {} passed to {} at {}: {}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
-
-    if dataFile not in scenarioMsgList:
-        raise RuntimeError('Unknown datafile: {} passed to {} at {}:{}'.format(dataFile, cmd.cmdType.name, cmd.line, cmd.column))
-    if unlocalized_key not in scenarioMsgList[dataFile]:
-        raise RuntimeError('Unknown message: {} passed to {} at {}:{}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
-
-def validate_add_custum_win_label(cmd: EvCmd, strList: list):
-    return
-    scenarioMsgList = GDataManager.getScenarioMsgList()
-    if scenarioMsgList is None:
-        return
-    msgIdx = cmd.args[0].data
-    msg = strList[msgIdx]
-    splitMsg = msg.split('%')
-    try:
-        dataFile = splitMsg[0]
-        unlocalized_key = splitMsg[1]
-    except IndexError:
-        return
-        # raise RuntimeError('Invalid msg: {} passed to {} at {}: {}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
-
-    if dataFile not in scenarioMsgList:
-        raise RuntimeError('Unknown datafile: {} passed to {} at {}:{}'.format(dataFile, cmd.cmdType.name, cmd.line, cmd.column))
-    if unlocalized_key not in scenarioMsgList[dataFile]:
-        raise RuntimeError('Unknown message: {} passed to {} at {}:{}'.format(msg, cmd.cmdType.name, cmd.line, cmd.column))
-
-VALIDATE_TABLE = {
-    EvCmdType._TALKMSG : validate_talk_msg,
-    EvCmdType._TALK_KEYWAIT : validate_talk_keywait,
-    EvCmdType._EASY_OBJ_MSG : validate_easy_obj_msg,
-    EvCmdType._ADD_CUSTUM_WIN_LABEL : validate_add_custum_win_label
-}
-
-def convertToUnity(ifpath, scripts, strList):
+def convertToUnity(ifpath, scripts, strList, linkerLabels):
     # FunctionDefinition.load("ev_scripts.json")
     tree = {}
     treeScripts = []
+
+    validator = Validator()
 
     for label, script in scripts.items():
         scriptCommands = []
@@ -180,12 +43,7 @@ def convertToUnity(ifpath, scripts, strList):
                 }
             ]
 
-            if evCmdType in VALIDATE_TABLE:
-                valid_func = VALIDATE_TABLE[evCmdType]
-                try:
-                    valid_func(cmd, strList)
-                except RuntimeError as exc:
-                    print(exc)
+            validator.validate_command(cmd, strList, linkerLabels)
 
             # reqArgs = funcDef.noReqArgs()
             # if len(cmd.args) < reqArgs:
@@ -284,10 +142,12 @@ def assemble(ifpath, ofpath, script):
     assembler = evAssembler()
     walker = ParseTreeWalker()
     walker.walk(assembler, tree)
-    unityTree = convertToUnity(assembler.scripts, assembler.strTbl)
+    unityTree = convertToUnity(assembler.scripts, assembler.strTbl, assembler.scripts.keys())
     repackUnity(ofpath, script, unityTree)
 
 def repackUnityAll(ifpath, ofpath, scripts):
+    os.makedirs("bin", exist_ok=True)
+    
     with open(ifpath, "rb") as ifobj:
             bundle = UnityPy.load(ifpath)
 
@@ -330,6 +190,9 @@ def assemble_all():
         flags = assembler.flags
         works = assembler.works
         sysflags = assembler.sysflags
+    
+    linkerLabels = []
+    toConvertList = []
     for ifpath in glob.glob("scripts/*.ev"):
         # Special file with special behaviour
         basename = os.path.basename(ifpath)
@@ -345,9 +208,12 @@ def assemble_all():
         assembler = evAssembler(ifpath, flags=copy(flags), works=copy(works), sysflags=copy(sysflags))
         walker = ParseTreeWalker()
         walker.walk(assembler, tree)
-        unityTree = convertToUnity(ifpath, assembler.scripts, assembler.strTbl)
-        scripts[basename] = unityTree
+        toConvertList.append((ifpath, assembler.scripts, assembler.strTbl))
+        linkerLabels.extend(assembler.scripts.keys())
         labelDatas.update(assembler.macroAssembler.labelDatas)
+    for toConvert in toConvertList:
+        unityTree = convertToUnity(toConvert[0], toConvert[1], toConvert[2], linkerLabels)
+        scripts[basename] = unityTree
     repackUnityAll("Dpr/ev_script", "bin/ev_script", scripts)
     updateLabelDatas("AssetFolder/english_Export", "english", labelDatas)
 

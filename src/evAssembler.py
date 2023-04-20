@@ -42,6 +42,7 @@ class EvCmd:
     args: list
     line: int
     column: int
+    filename: str
 
 @dataclass
 class EvMacro:
@@ -363,7 +364,7 @@ class MacroAssembler:
         argVal = strTbl.index(strVal)
         evCmdArgs = [EvArg(EvArgType.String, argVal, msgFile.line, msgFile.column)]
         evCmdArgs.extend(macro.args[3:])
-        macroCommands.append(EvCmd(cmdType, evCmdArgs, macro.line, macro.column))
+        macroCommands.append(EvCmd(cmdType, evCmdArgs, macro.line, macro.column, self.fileName))
 
         commands.extend(macroCommands)
         return len(macroCommands)
@@ -441,7 +442,7 @@ class evAssembler(evListener):
             raise RuntimeError("Invalid EvCmd or EvMacro: {} at {}:{}:{}".format(name, self.fileName, ctx.start.line, ctx.start.column))
         evCmdType = getattr(EvCmdType, name)
         args = []
-        evCmd = EvCmd(evCmdType, args, ctx.start.line, ctx.start.column)
+        evCmd = EvCmd(evCmdType, args, ctx.start.line, ctx.start.column, self.fileName)
         self.scripts[self.currentLabel].append(evCmd)
         self.currCmdIdx += 1
 
