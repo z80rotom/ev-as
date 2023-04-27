@@ -30,6 +30,13 @@ MACRO_NAME_CMD_TABLE = {
 }
 
 @dataclass
+class EvCmdTypeWrapper:
+    value: int
+
+    def __hash__(self):
+        return self.value
+
+@dataclass
 class EvArg:
     argType: int
     data: int
@@ -386,7 +393,7 @@ class MacroAssembler:
         raise RuntimeError("Invalid EvMacro: {} at {}:{}:{}".format(macro, self.fileName, macro.line, macro.column))
 
 class evAssembler(evListener):
-    def __init__(self, fileName, flags=None, works=None, sysflags=None):
+    def __init__(self, fileName, commands=None, flags=None, works=None, sysflags=None):
         self.fileName = fileName
         self.macro = EvMacro(EvMacroType.Invalid, [], 0, 0)
         self.macroAssembler = MacroAssembler(fileName)
@@ -397,6 +404,10 @@ class evAssembler(evListener):
         self.writer = EndianBinaryWriter()
         self.tags = {}
         self.skipEntry = False
+        if commands is None:
+            self.commands = {}
+        else:
+            self.commands = commands
         if flags is None:
             self.flags = {}
         else:
@@ -428,6 +439,7 @@ class evAssembler(evListener):
     # Enter a parse tree produced by evParser#instruction.
     def enterInstruction(self, ctx:evParser.InstructionContext):
         name = str(ctx.getChild(0).getChild(0))
+        name.upper()
         if self.macro.isValid():
             self.currCmdIdx += self.macroAssembler.process(self.macro, self.scripts[self.currentLabel], self.strTbl, self.tags)
             self.macro = EvMacro(EvMacroType.Invalid, [], ctx.start.line, ctx.start.column)
@@ -439,8 +451,12 @@ class evAssembler(evListener):
             return
         
         if not hasattr(EvCmdType, name):
-            raise RuntimeError("Invalid EvCmd or EvMacro: {} at {}:{}:{}".format(name, self.fileName, ctx.start.line, ctx.start.column))
-        evCmdType = getattr(EvCmdType, name)
+            if name in self.commands:
+                evCmdType = EvCmdTypeWrapper(self.commands[name])
+            else:
+                raise RuntimeError("Invalid EvCmd or EvMacro: {} at {}:{}:{}".format(name, self.fileName, ctx.start.line, ctx.start.column))
+        else:
+            evCmdType = getattr(EvCmdType, name)
         args = []
         evCmd = EvCmd(evCmdType, args, ctx.start.line, ctx.start.column, self.fileName)
         self.scripts[self.currentLabel].append(evCmd)

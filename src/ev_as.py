@@ -191,6 +191,17 @@ def assemble_all():
         works = assembler.works
         sysflags = assembler.sysflags
     
+    commands = {}
+    if os.path.exists("commands.json"):
+        print("Loading external commands reference from commands.json")
+        with open("commands.json", "r") as ofobj:
+            data = json.load(ofobj)
+            for entry in data:
+                try:
+                    commands[entry["Name"]] = entry["Id"]
+                except KeyError:
+                    print("Unable to load commands.json, missing either Id or Name key. Defaulting to known commands")
+
     linkerLabels = []
     toConvertList = []
     for ifpath in glob.glob("scripts/*.ev"):
@@ -205,7 +216,7 @@ def assemble_all():
         parser = evParser(stream)
         tree = parser.prog()
 
-        assembler = evAssembler(ifpath, flags=copy(flags), works=copy(works), sysflags=copy(sysflags))
+        assembler = evAssembler(ifpath, commands=copy(commands), flags=copy(flags), works=copy(works), sysflags=copy(sysflags))
         walker = ParseTreeWalker()
         walker.walk(assembler, tree)
         toConvertList.append((ifpath, assembler.scripts, assembler.strTbl))
