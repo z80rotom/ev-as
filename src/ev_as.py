@@ -179,6 +179,28 @@ def load_definitions():
 
     return assembler
 
+def loadCoreLabels(ifpath, ignoreNames):
+    linkerLabels = []
+    with open(ifpath, "rb") as ifobj:
+        bundle = UnityPy.load(ifpath)
+
+        for obj in bundle.objects:
+            if obj.type.name != "MonoBehaviour":
+                continue
+            data = obj.read()
+            if data.name in ignoreNames:
+                continue
+            if obj.serialized_type.nodes:
+                tree = obj.read_typetree()
+                if "Scripts" not in tree:
+                    continue
+                scripts = tree["Scripts"]
+                for script in scripts:
+                    label = script["Label"]
+                    linkerLabels.append(label)
+
+    return linkerLabels
+
 def assemble_all():
     scripts = {}
     labelDatas = {}
@@ -204,6 +226,7 @@ def assemble_all():
 
     linkerLabels = []
     toConvertList = []
+    ignoreList = []
     for ifpath in glob.glob("scripts/*.ev"):
         # Special file with special behaviour
         basename = os.path.basename(ifpath)
@@ -219,12 +242,14 @@ def assemble_all():
         assembler = evAssembler(ifpath, commands=copy(commands), flags=copy(flags), works=copy(works), sysflags=copy(sysflags))
         walker = ParseTreeWalker()
         walker.walk(assembler, tree)
-        toConvertList.append((ifpath, assembler.scripts, assembler.strTbl))
+        toConvertList.append((ifpath, assembler.scripts, assembler.strTbl, basename))
         linkerLabels.extend(assembler.scripts.keys())
         labelDatas.update(assembler.macroAssembler.labelDatas)
+        ignoreList.append(basename)
+    linkerLabels.extend(loadCoreLabels("Dpr/ev_script", ignoreList))
     for toConvert in toConvertList:
         unityTree = convertToUnity(toConvert[0], toConvert[1], toConvert[2], linkerLabels)
-        scripts[basename] = unityTree
+        scripts[toConvert[3]] = unityTree
     repackUnityAll("Dpr/ev_script", "bin/ev_script", scripts)
     updateLabelDatas("AssetFolder/english_Export", "english", labelDatas)
 
