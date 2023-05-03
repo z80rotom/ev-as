@@ -1,5 +1,6 @@
 import os
 import struct
+import json
 from argparse import ArgumentParser
 
 import UnityPy
@@ -16,7 +17,7 @@ def decode_int(var):
     data = float(struct.unpack('!f', struct.pack('!I', var & 0xFFFFFFFF))[0])
     return data
 
-def parse_ev_script(tree, name=None):
+def parse_ev_script(tree, custom_commands, name=None):
     if "Scripts" not in tree:
         # Not actually an ev_script
         return
@@ -34,8 +35,12 @@ def parse_ev_script(tree, name=None):
             if len(args) == 0:
                 continue
             arg = args[0]
-            evCmd = EvCmdType(arg["data"])
-            
+
+            try:
+                evCmd = EvCmdType(arg["data"])
+            except ValueError as exc:
+                evCmd = custom_commands[arg["data"]]
+
             args = args[1:]
 
             argData = []
@@ -102,6 +107,18 @@ def write_ev_script(ofdir, name, compiledScripts):
         ofobj.write(data)
 
 def parse_ev_scripts(ifdir, ofdir):
+    commands = {}
+    if os.path.exists("commands.json"):
+        print("Loading external commands reference from commands.json")
+        with open("commands.json", "r") as ofobj:
+            data = json.load(ofobj)
+            for entry in data:
+                try:
+                    commands[entry["Id"]] = entry["Name"]
+                except KeyError:
+                    print("Unable to load commands.json, missing either Id or Name key. Defaulting to known commands")
+
+
     with open(ifdir, "rb") as ifobj:
         bundle = UnityPy.load(ifdir)
 
@@ -111,7 +128,7 @@ def parse_ev_scripts(ifdir, ofdir):
                     data = obj.read()
                     if obj.serialized_type.nodes:
                         tree = obj.read_typetree()
-                        compiledScripts = parse_ev_script(tree, name=data.name)
+                        compiledScripts = parse_ev_script(tree, commands, name=data.name)
                         write_ev_script(ofdir, data.name, compiledScripts)
                 except Exception as exc:
                     print(exc)
