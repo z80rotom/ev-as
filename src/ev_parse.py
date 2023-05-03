@@ -4,6 +4,7 @@ import json
 from argparse import ArgumentParser
 
 import UnityPy
+from evAssembler import EvCmdTypeWrapper
 
 from ev_cmd import EvCmdType
 from ev_argtype import EvArgType
@@ -39,7 +40,8 @@ def parse_ev_script(tree, custom_commands, name=None):
             try:
                 evCmd = EvCmdType(arg["data"])
             except ValueError as exc:
-                evCmd = custom_commands[arg["data"]]
+                iValue = arg["data"]
+                evCmd = EvCmdTypeWrapper(custom_commands[iValue], iValue)
 
             args = args[1:]
 

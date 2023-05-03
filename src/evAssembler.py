@@ -31,6 +31,7 @@ MACRO_NAME_CMD_TABLE = {
 
 @dataclass
 class EvCmdTypeWrapper:
+    name: str
     value: int
 
     def __hash__(self):
@@ -452,7 +453,7 @@ class evAssembler(evListener):
         
         if not hasattr(EvCmdType, name):
             if name in self.commands:
-                evCmdType = EvCmdTypeWrapper(self.commands[name])
+                evCmdType = EvCmdTypeWrapper(name, self.commands[name])
             else:
                 raise RuntimeError("Invalid EvCmd or EvMacro: {} at {}:{}:{}".format(name, self.fileName, ctx.start.line, ctx.start.column))
         else:
