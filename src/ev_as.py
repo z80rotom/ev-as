@@ -130,7 +130,7 @@ def updateLabelDatas(path, lang, labelDatas):
         ifpath = os.path.join(path, "{}_{}.json".format(lang, data_file))
         with open(ifpath, "w", encoding='utf-8') as ofobj:
             msbt_file = msbt_files[data_file]
-            json.dump(MsbtFile.Schema().dump(msbt_file), ofobj, indent=4)
+            json.dump(MsbtFile.Schema().dump(msbt_file), ofobj, indent=4, ensure_ascii=False)
 
 def assemble(ifpath, ofpath, script):
     input_stream = FileStream(ifpath)
