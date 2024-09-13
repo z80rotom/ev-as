@@ -375,9 +375,10 @@ class MacroAssembler:
         macroCommands.append(EvCmd(cmdType, evCmdArgs, macro.line, macro.column, self.fileName))
 
         commands.extend(macroCommands)
-        return len(macroCommands)
+        return macroCommands
 
-    def process(self, macro, commands, strTbl, tags):
+    def process(self, macro, strTbl, tags):
+        commands = []
         if macro.cmdType == EvMacroType.Invalid:
             raise RuntimeError("Invalid EvCmd or EvMacro: {} at {}:{}:{}".format(macro, self.fileName, macro.line, macro.column))
         textMacroMap = {
@@ -403,206 +404,126 @@ class evAssembler(evListener):
         self.strTbl = []
         self.currCmdIdx = -1
         self.writer = EndianBinaryWriter()
-        self.tags = {}
-        self.skipEntry = False
-        if commands is None:
-            self.commands = {}
-        else:
-            self.commands = commands
-        if flags is None:
-            self.flags = {}
-        else:
-            self.flags = flags
-
-        if works is None:
-            self.works = {}
-        else:
-            self.works = works
-
-        if sysflags is None:
-            self.sysflags = {}
-        else:
-            self.sysflags = sysflags
+        self.commands = {} if commands is None else commands
+        self.flags = {} if flags is None else flags
+        self.works = {} if works is None else works
+        self.sysflags = {} if sysflags is None else sysflags
 
     def enterLbl(self, ctx: evParser.LblContext):
-        lbl = ctx.getChild(0).getChild(0)
-        # print("enterLbl: {}".format(lbl))
-        # If someone can get the grammar working a bit better
-        # then this replace can go away, but I can't get the :
-        # in the right rule not to do this without making labels
-        # unable to start with _
-        lblName = str(lbl).replace(':', '')
-        self.currentLabel = lblName
-        self.scripts[self.currentLabel] = []
-        self.currCmdIdx = -1
-        self.tags = {}
+        lblName = ctx.name().getText()
+        commands = []
+        for instructionCtx in ctx.instruction():
+            isMacro = False
+            macroType = None
+            tags = {}
+            cmdName = instructionCtx.name().NAME().getText()
+            cmdName = cmdName.upper()
+            evCmdType = None
 
-    # Enter a parse tree produced by evParser#instruction.
-    def enterInstruction(self, ctx:evParser.InstructionContext):
-        name = str(ctx.getChild(0).getChild(0))
-        name.upper()
-        if self.macro.isValid():
-            self.currCmdIdx += self.macroAssembler.process(self.macro, self.scripts[self.currentLabel], self.strTbl, self.tags)
-            self.macro = EvMacro(EvMacroType.Invalid, [], ctx.start.line, ctx.start.column)
-
-        if hasattr(EvMacroType, name):
-            # Not a command, but a macro, set the current macro so I can get it on
-            macroType = getattr(EvMacroType, name)
-            self.macro = EvMacro(macroType, [], ctx.start.line, ctx.start.column)
-            return
-        
-        if not hasattr(EvCmdType, name):
-            if name in self.commands:
-                evCmdType = EvCmdTypeWrapper(name, self.commands[name])
+            if hasattr(EvMacroType, cmdName):
+                # Not a command, but a macro, set the current macro so I can get it on
+                macroType = getattr(EvMacroType, cmdName)
+                isMacro = True
             else:
-                raise RuntimeError("Invalid EvCmd or EvMacro: {} at {}:{}:{}".format(name, self.fileName, ctx.start.line, ctx.start.column))
-        else:
-            evCmdType = getattr(EvCmdType, name)
-        args = []
-        evCmd = EvCmd(evCmdType, args, ctx.start.line, ctx.start.column, self.fileName)
-        self.scripts[self.currentLabel].append(evCmd)
-        self.currCmdIdx += 1
+                if not hasattr(EvCmdType, cmdName):
+                    if cmdName in self.commands:
+                        evCmdType = EvCmdTypeWrapper(cmdName, self.commands[cmdName])
+                    else:
+                        raise RuntimeError("Invalid EvCmd or EvMacro: {} at {}:{}:{}".format(cmdName, self.fileName, ctx.start.line, ctx.start.column))
+                else:
+                    evCmdType = getattr(EvCmdType, cmdName)
+            args = []
+
+            for arg in instructionCtx.expressionlist().argument():
+                if arg.number() is not None:
+                    args.append(self.parseNumber(arg.number(), evCmdType, tags, isMacro))
+                    continue
+                if arg.work() is not None:
+                    argVal = self.parseNameValue(arg.work(), EvWork, self.works)
+                    if argVal is None:
+                        raise RuntimeError("Unknown work: @{}. Cannot convert to number {}:{}:{}".format(argVal, self.fileName, arg.work().start.line, arg.work().start.column))
+                    if argVal > MAX_WORK:
+                        print("[Warning] line {}:{}:{} Invalid work: @{}".format(self.fileName, arg.work().start.line, arg.work().start.column, argVal))
+                    args.append(EvArg(EvArgType.Work, argVal, arg.work().start.line, arg.work().start.column))
+                    continue
+                if arg.flag() is not None:
+                    argVal = self.parseNameValue(arg.flag(), EvFlag, self.flags)
+                    if argVal is None:
+                        raise RuntimeError("Unknown Flag: #{}. Cannot convert to number {}:{}:{}".format(argVal, self.fileName, arg.flag().start.line, arg.flag().start.column))
+                    if argVal > MAX_FLAG:
+                        print("[Warning] line {}:{}:{} Invalid Flag: #{}".format(self.fileName, arg.flag().start.line, arg.flag().start.column, argVal))
+                    args.append(EvArg(EvArgType.Flag, argVal, arg.flag().start.line, arg.flag().start.column))
+                    continue
+                if arg.sysFlag() is not None:
+                    argVal = self.parseNameValue(arg.sysFlag(), EvSysFlag, self.sysflags)
+                    if argVal is None:
+                        raise RuntimeError("Unknown SysFlag: ${}. Cannot convert to number {}:{}:{}".format(argVal, self.fileName, arg.sysFlag().start.line, arg.sysFlag().start.column))
+                    if argVal > MAX_SYS_FLAG:
+                        print("[Warning] line {}:{}:{} Invalid SysFlag: ${}".format(self.fileName, arg.sysFlag().start.line, arg.sysFlag().start.column, argVal))
+                    args.append(EvArg(EvArgType.SysFlag, argVal, arg.sysFlag().start.line, arg.sysFlag().start.column))
+                    continue
+                if arg.string_() is not None:
+                    args.append(self.parseString_(arg.string_(), isMacro))
+                    continue
+            if isMacro:
+                self.macro = EvMacro(macroType, args, ctx.start.line, ctx.start.column)
+                commands.extend(self.macroAssembler.process(self.macro, self.strTbl, tags))
+            else:
+                evCmd = EvCmd(evCmdType, args, ctx.start.line, ctx.start.column, self.fileName)
+                commands.append(evCmd)
+        self.scripts[lblName] = commands
 
     def enterDefine(self, ctx: evParser.DefineContext):
         work = ctx.work()
         flag = ctx.flag()
         sysflag = ctx.sysFlag()
         number = ctx.number()
+        value = int(str(number.NUMBER().getText()))
 
         if work is not None:
-            key = str(work.getChild(1)).upper()
-            value = int(str(number.getChild(0)))
+            key = str(work.NAME().getText()).upper()
             if value > MAX_WORK:
                 raise RuntimeError("Invalid work definition: @{}. {} greater than max work value {} at {}:{}:{}".format(key, value, MAX_WORK, self.fileName, ctx.start.line, ctx.start.column))
             self.works[key] = value
         if flag is not None:
-            key = str(flag.getChild(1)).upper()
-            value = int(str(number.getChild(0)))
+            key = str(flag.NAME().getText()).upper()
             if value > MAX_FLAG:
                 raise RuntimeError("Invalid flag definition: #{}. {} greater than max flag value {} at {}:{}:{}".format(key, value, MAX_FLAG, self.fileName, ctx.start.line, ctx.start.column))
             self.flags[key] = value
         if sysflag is not None:
-            key = str(sysflag.getChild(1)).upper()
-            value = int(str(number.getChild(0)))
+            key = str(sysflag.NAME().getText()).upper()
             if value > MAX_SYS_FLAG:
                 raise RuntimeError("Invalid SysFlag definition: ${}. {} greater than max sysflag value {} at {}:{}:{}".format(key, value, MAX_SYS_FLAG, self.fileName, ctx.start.line, ctx.start.column))
             self.sysflags[key] = value
-        self.skipEntry = True
 
-    def enterNumber(self, ctx: evParser.NumberContext):
-        if self.skipEntry:
-            self.skipEntry = False
-            return
-        argVal = encode_float(float(str(ctx.getChild(0))))
+    def parseNumber(self, ctx: evParser.NumberContext, cmdType, tags, isMacro):
+        argVal = encode_float(float(ctx.NUMBER().getText()))
         try:
             self.writer.write_int(argVal)
         except Exception as exc:
             print("Invalid float: {}".format(argVal))
         
-        if self.macro.isValid():
-            self.macro.args.append(
-                EvArg(EvArgType.Value, argVal, ctx.start.line, ctx.start.column)
-            )
-        else:
-            evCmd = self.scripts[self.currentLabel][self.currCmdIdx]
-            if evCmd.cmdType in MACRO_NAME_CMD_TABLE:
-                tagIndex = argVal
-                self.tags[tagIndex] = MACRO_NAME_CMD_TABLE[evCmd.cmdType]
-            evCmd.args.append(
-                EvArg(EvArgType.Value, argVal, ctx.start.line, ctx.start.column)
-            )
+        if not isMacro:
+            if cmdType in MACRO_NAME_CMD_TABLE:
+                tags[argVal] = MACRO_NAME_CMD_TABLE[cmdType]
+        return EvArg(EvArgType.Value, argVal, ctx.start.line, ctx.start.column)
     
-    def enterWork(self, ctx: evParser.WorkContext):
-        if self.skipEntry:
-            return
-        argVal = str(ctx.getChild(1))
-
-        if argVal.isdigit():
-            argVal = int(argVal)
+    def parseNameValue(self, ctx, enumCls, fallback):
+        if ctx.NUMBER():
+            argVal = int(ctx.NUMBER().getText())
         else:
-            argVal = argVal.upper()
-            if hasattr(EvWork, argVal):
-                argVal = getattr(EvWork, argVal)
-            elif argVal in self.works:
-                argVal = self.works[argVal]
-            else:
-                raise RuntimeError("Unknown work: @{}. Cannot convert to number {}:{}:{}".format(argVal, self.fileName, ctx.start.line, ctx.start.column))
-
-        if self.macro.isValid():
-            self.macro.args.append(
-                EvArg(EvArgType.Work, argVal, ctx.start.line, ctx.start.column)
-            )
-        else:
-            self.scripts[self.currentLabel][self.currCmdIdx].args.append(
-                EvArg(EvArgType.Work, argVal, ctx.start.line, ctx.start.column)
-            )
-
-        if argVal > MAX_WORK:
-            print("[Warning] line {}:{}:{} Invalid work: @{}".format(self.fileName, ctx.start.line, ctx.start.column, argVal))
-
-    def enterFlag(self, ctx: evParser.FlagContext):
-        if self.skipEntry:
-            return
-        argVal = str(ctx.getChild(1))
-
-        if argVal.isdigit():
-            argVal = int(argVal)
-        else:
-            argVal = argVal.upper()
-            if hasattr(EvFlag, argVal):
-                argVal = getattr(EvFlag, argVal)
-            elif argVal in self.flags:
-                argVal = self.flags[argVal]
-            else:
-                raise RuntimeError("Unknown Flag: #{}. Cannot convert to number {}:{}:{}".format(argVal, self.fileName, ctx.start.line, ctx.start.column))
-
-        if self.macro.isValid():
-            self.macro.args.append(
-                EvArg(EvArgType.Flag, argVal, ctx.start.line, ctx.start.column)
-            )
-        else:
-            self.scripts[self.currentLabel][self.currCmdIdx].args.append(
-                EvArg(EvArgType.Flag, argVal, ctx.start.line, ctx.start.column)
-            )
+            name = ctx.NAME().getText().upper()
+            if hasattr(enumCls, name):
+                argVal = getattr(enumCls, name)
+            elif argVal in fallback:
+                argVal = fallback[name]
+        return argVal
     
-        if argVal > MAX_FLAG:
-            print("[Warning] line {}:{}:{} Invalid Flag: #{}".format(self.fileName, ctx.start.line, ctx.start.column, argVal))
-
-    def enterSysFlag(self, ctx: evParser.SysFlagContext):
-        if self.skipEntry:
-            return
-        argVal = str(ctx.getChild(1))
-
-        if argVal.isdigit():
-            argVal = int(argVal)
-        else:
-            argVal = argVal.upper()
-            if hasattr(EvSysFlag, argVal):
-                argVal = getattr(EvSysFlag, argVal)
-            elif argVal in self.sysflags:
-                argVal = self.sysflags[argVal]
-            else:
-                raise RuntimeError("Unknown SysFlag: ${}. Cannot convert to number {}:{}".format(argVal, ctx.start.line, ctx.start.column))
-
-        if self.macro.isValid():
-            self.macro.args.append(
-                EvArg(EvArgType.SysFlag, argVal, ctx.start.line, ctx.start.column)
-            )
-        else:
-            self.scripts[self.currentLabel][self.currCmdIdx].args.append(
-                EvArg(EvArgType.SysFlag, argVal, ctx.start.line, ctx.start.column)
-            )
-    
-    def enterString_(self, ctx: evParser.String_Context):
-        strVal = str(ctx.getChild(0))[1:-1] # Trim off apostrophes
-        if self.macro.isValid():
-            self.macro.args.append(
-                EvArg(EvArgType.MacroString, strVal, ctx.start.line, ctx.start.column)
-            )
-        else:
-            if strVal not in self.strTbl:
-                self.strTbl.append(strVal)
-            argVal = self.strTbl.index(strVal)
-            self.scripts[self.currentLabel][self.currCmdIdx].args.append(
-                EvArg(EvArgType.String, argVal, ctx.start.line, ctx.start.column)
-            )    
+    def parseString_(self, ctx: evParser.String_Context, isMacro):
+        strVal = ctx.getText()[1:-1] # Trim off apostrophes
+        if isMacro:
+            return EvArg(EvArgType.MacroString, strVal, ctx.start.line, ctx.start.column)
+        if strVal not in self.strTbl:
+            self.strTbl.append(strVal)
+        argVal = self.strTbl.index(strVal)
+        return EvArg(EvArgType.String, argVal, ctx.start.line, ctx.start.column)

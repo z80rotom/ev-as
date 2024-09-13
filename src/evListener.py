@@ -1,6 +1,6 @@
-# Generated from ev.g4 by ANTLR 4.9.3
+# Generated from ev.g4 by ANTLR 4.13.1
 from antlr4 import *
-if __name__ is not None and "." in __name__:
+if "." in __name__:
     from .evParser import evParser
 else:
     from evParser import evParser
@@ -122,15 +122,6 @@ class evListener(ParseTreeListener):
 
     # Exit a parse tree produced by evParser#number.
     def exitNumber(self, ctx:evParser.NumberContext):
-        pass
-
-
-    # Enter a parse tree produced by evParser#comment.
-    def enterComment(self, ctx:evParser.CommentContext):
-        pass
-
-    # Exit a parse tree produced by evParser#comment.
-    def exitComment(self, ctx:evParser.CommentContext):
         pass
 
 
