@@ -375,9 +375,10 @@ class MacroAssembler:
         macroCommands.append(EvCmd(cmdType, evCmdArgs, macro.line, macro.column, self.fileName))
 
         commands.extend(macroCommands)
-        return len(macroCommands)
+        return macroCommands
 
-    def process(self, macro, commands, strTbl, tags):
+    def process(self, macro, strTbl, tags):
+        commands = []
         if macro.cmdType == EvMacroType.Invalid:
             raise RuntimeError("Invalid EvCmd or EvMacro: {} at {}:{}:{}".format(macro, self.fileName, macro.line, macro.column))
         textMacroMap = {
@@ -415,7 +416,7 @@ class evAssembler(evListener):
             isMacro = False
             macroType = None
             tags = {}
-            cmdName = instructionCtx.name()
+            cmdName = instructionCtx.name().NAME().getText()
             cmdName = cmdName.upper()
             evCmdType = None
 
@@ -423,17 +424,17 @@ class evAssembler(evListener):
                 # Not a command, but a macro, set the current macro so I can get it on
                 macroType = getattr(EvMacroType, cmdName)
                 isMacro = True
-            
-            if not hasattr(EvCmdType, cmdName):
-                if cmdName in self.commands:
-                    evCmdType = EvCmdTypeWrapper(cmdName, self.commands[cmdName])
-                else:
-                    raise RuntimeError("Invalid EvCmd or EvMacro: {} at {}:{}:{}".format(cmdName, self.fileName, ctx.start.line, ctx.start.column))
             else:
-                evCmdType = getattr(EvCmdType, cmdName)
+                if not hasattr(EvCmdType, cmdName):
+                    if cmdName in self.commands:
+                        evCmdType = EvCmdTypeWrapper(cmdName, self.commands[cmdName])
+                    else:
+                        raise RuntimeError("Invalid EvCmd or EvMacro: {} at {}:{}:{}".format(cmdName, self.fileName, ctx.start.line, ctx.start.column))
+                else:
+                    evCmdType = getattr(EvCmdType, cmdName)
             args = []
 
-            for arg in instructionCtx.expressionlist().argument()
+            for arg in instructionCtx.expressionlist().argument():
                 if arg.number() is not None:
                     args.append(self.parseNumber(arg.number(), evCmdType, tags, isMacro))
                     continue
@@ -446,7 +447,7 @@ class evAssembler(evListener):
                     args.append(EvArg(EvArgType.Work, argVal, arg.work().start.line, arg.work().start.column))
                     continue
                 if arg.flag() is not None:
-                    argVal = self.parseNameValue(arg.work(), EvWork, self.works)
+                    argVal = self.parseNameValue(arg.flag(), EvFlag, self.flags)
                     if argVal is None:
                         raise RuntimeError("Unknown Flag: #{}. Cannot convert to number {}:{}:{}".format(argVal, self.fileName, arg.flag().start.line, arg.flag().start.column))
                     if argVal > MAX_FLAG:
@@ -454,16 +455,19 @@ class evAssembler(evListener):
                     args.append(EvArg(EvArgType.Flag, argVal, arg.flag().start.line, arg.flag().start.column))
                     continue
                 if arg.sysFlag() is not None:
-                    argVal = self.parseNameValue(arg.work(), EvSysFlag, self.sys_flags)
+                    argVal = self.parseNameValue(arg.sysFlag(), EvSysFlag, self.sysflags)
                     if argVal is None:
                         raise RuntimeError("Unknown SysFlag: ${}. Cannot convert to number {}:{}:{}".format(argVal, self.fileName, arg.sysFlag().start.line, arg.sysFlag().start.column))
                     if argVal > MAX_SYS_FLAG:
                         print("[Warning] line {}:{}:{} Invalid SysFlag: ${}".format(self.fileName, arg.sysFlag().start.line, arg.sysFlag().start.column, argVal))
                     args.append(EvArg(EvArgType.SysFlag, argVal, arg.sysFlag().start.line, arg.sysFlag().start.column))
                     continue
+                if arg.string_() is not None:
+                    args.append(self.parseString_(arg.string_(), isMacro))
+                    continue
             if isMacro:
                 self.macro = EvMacro(macroType, args, ctx.start.line, ctx.start.column)
-                self.currCmdIdx += self.macroAssembler.process(self.macro, self.scripts[self.currentLabel], self.strTbl, tags)
+                commands.extend(self.macroAssembler.process(self.macro, self.strTbl, tags))
             else:
                 evCmd = EvCmd(evCmdType, args, ctx.start.line, ctx.start.column, self.fileName)
                 commands.append(evCmd)
@@ -493,7 +497,7 @@ class evAssembler(evListener):
             self.sysflags[key] = value
 
     def parseNumber(self, ctx: evParser.NumberContext, cmdType, tags, isMacro):
-        argVal = encode_float(float(ctx.NUMBER.getText()))
+        argVal = encode_float(float(ctx.NUMBER().getText()))
         try:
             self.writer.write_int(argVal)
         except Exception as exc:
