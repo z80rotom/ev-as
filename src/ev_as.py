@@ -21,8 +21,9 @@ from msbt import MsbtFile
 from validator import Validator
 
 def jsonDumpUnity(tree, ofpath):
-    with open(ofpath, "w") as ofobj:
-        json.dump(tree, ofobj, indent=4)
+    with open(ofpath, "w", encoding="utf-8") as ofobj:
+        # Added ensure_ascii=False to preserve special characters (like accents)
+        json.dump(tree, ofobj, indent=4, ensure_ascii=False)
 
 def convertToUnity(ifpath, scripts, strList, linkerLabels):
     # FunctionDefinition.load("ev_scripts.json")
@@ -201,7 +202,29 @@ def loadCoreLabels(ifpath, ignoreNames):
 
     return linkerLabels
 
-def assemble_all():
+def assemble_all(language="english"):
+    print(f"Using language: {language}")
+
+    # Check if the requested language files actually exist before doing anything
+    language_export_path = f"AssetFolder/{language}_Export"
+    if not os.path.exists(language_export_path):
+        print(f"Error: Language export folder '{language_export_path}' not found!")
+        print("Available languages:")
+        asset_folder = "AssetFolder"
+        if os.path.exists(asset_folder):
+            for item in os.listdir(asset_folder):
+                if item.endswith("_Export") and os.path.isdir(
+                    os.path.join(asset_folder, item)
+                ):
+                    lang_name = item.replace("_Export", "")
+                    print(f"  - {lang_name}")
+        return
+
+    # Set the language in gdatamanager to load that language instead of English
+    from gdatamanger import GDataManager
+
+    GDataManager.setLanguage(language)
+
     scripts = {}
     labelDatas = {}
     flags = {}
@@ -251,17 +274,28 @@ def assemble_all():
         unityTree = convertToUnity(toConvert[0], toConvert[1], toConvert[2], linkerLabels)
         scripts[toConvert[3]] = unityTree
     repackUnityAll("Dpr/ev_script", "bin/ev_script", scripts)
-    updateLabelDatas("AssetFolder/english_Export", "english", labelDatas)
+    # Use the selected language instead of hardcoded English
+    updateLabelDatas(f"AssetFolder/{language}_Export", language, labelDatas)
 
 def main():
-    # parser = ArgumentParser()
+    parser = ArgumentParser()
+    # Argument for the user to select the language the macro command dialogs' will be exported to
+    parser.add_argument(
+        "-l",
+        "--language",
+        dest="language",
+        action="store",
+        default="english",
+        choices=["english", "spanish", "french", "german", "italian", "jpn", "jpn_kanji", "korean", "simp_chinese", "trad_chinese"],
+        help="Language to use for dialog files (default: english)",
+    )
     # parser.add_argument("-i", "--input", dest='ifpath', action='store', required=True)
     # parser.add_argument("-o", "--output", dest='ofpath', action='store', required=True)
     # parser.add_argument("-s", "--script", dest='script', action='store', required=True)
 
-    # vargs = parser.parse_args()
+    vargs = parser.parse_args()
     # assemble(vargs.ifpath, vargs.ofpath, vargs.script)
-    assemble_all()
+    assemble_all(vargs.language)
     print("Assembly finished")
 
 if __name__ == "__main__":

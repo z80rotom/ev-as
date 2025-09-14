@@ -1,1 +1,605 @@
-[{"Id" : 3000, "Name" : "_FAKE_COMMAND"}, {"Id":226,"Name":"_SET_WEATHER","Description":"Sets the weather.","Dummy":false,"Animation":false,"Args":[{"TentativeName":"Weather","Description":"The ID of the weather to change to.","Type":["Number","Work"],"Optional":false}]},{"Id":1229,"Name":"_TEMOTI_FORMNO","Description":"Returns the form id of the Pokémon at the given index in the party.","Dummy":false,"Animation":false,"Args":[{"TentativeName":"Index","Description":"The index that points to the given Pokémon.","Type":["Number","Work"],"Optional":false},{"TentativeName":"Result","Description":"The work in which to put the result in.","Type":["Work"],"Optional":false}]},{"Id":1230,"Name":"_TEMOTI_BOX_FORMNO","Description":"Returns the form id of the Pokémon at the given index and tray index.","Dummy":false,"Animation":false,"Args":[{"TentativeName":"Index","Description":"The index that points to the given Pokémon.","Type":["Number","Work"],"Optional":false},{"TentativeName":"TrayIndex","Description":"The tray index in which to look for the given Pokémon.","Type":["Number","Work"],"Optional":false},{"TentativeName":"Result","Description":"The work in which to put the result in.","Type":["Work"],"Optional":false}]},{"Id":1231,"Name":"_GET_BOX_POKE_SEIKAKU","Description":"Returns the nature id of the Pokémon at the given index and tray index.","Dummy":false,"Animation":false,"Args":[{"TentativeName":"Index","Description":"The index that points to the given Pokémon.","Type":["Number","Work"],"Optional":false},{"TentativeName":"TrayIndex","Description":"The tray index in which to look for the given Pokémon.","Type":["Number","Work"],"Optional":false},{"TentativeName":"Result","Description":"The work in which to put the result in.","Type":["Work"],"Optional":false}]},{"Id":1232,"Name":"_RELEASE_BOX_POKE","Description":"Releases the Pokémon at the given index and tray index.","Dummy":false,"Animation":false,"Args":[{"TentativeName":"Index","Description":"The index that points to the given Pokémon.","Type":["Number","Work"],"Optional":false},{"TentativeName":"TrayIndex","Description":"The tray index in which to look for the given Pokémon.","Type":["Number","Work"],"Optional":false}]}]
+[
+    {
+        "Id": 226,
+        "Name": "_SET_WEATHER",
+        "Description": "Sets the weather.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Weather",
+                "Description": "The ID of the weather to change to.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+	{
+        "Id": 259,
+        "Name": "_FIRST_POKE_SELECT_PROC",
+        "Description": "Plays the starter selection scene, then adds the chosen starter to the party.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Result",
+                "Description": "The work in which to put the result of attempting to add the starter to the party.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": true
+            }
+        ]
+    },
+	{
+        "Id": 326,
+        "Name": "_FIRST_POKE_NO_GET",
+        "Description": "Returns the player's starter selection. Possible values are 0, 1, and 2.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Result",
+                "Description": "The work in which to put the result in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1236,
+        "Name": "_TEMOTI_FORMNO",
+        "Description": "Returns the form id of the Pokémon at the given index in the party.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Index",
+                "Description": "The index that points to the given Pokémon.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+            {
+                "TentativeName": "Result",
+                "Description": "The work in which to put the result in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1237,
+        "Name": "_TEMOTI_BOX_FORMNO",
+        "Description": "Returns the form id of the Pokémon at the given index and tray index.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Index",
+                "Description": "The index that points to the given Pokémon.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+            {
+                "TentativeName": "TrayIndex",
+                "Description": "The tray index in which to look for the given Pokémon.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+            {
+                "TentativeName": "Result",
+                "Description": "The work in which to put the result in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1238,
+        "Name": "_GET_BOX_POKE_SEIKAKU",
+        "Description": "Returns the nature id of the Pokémon at the given index and tray index.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Index",
+                "Description": "The index that points to the given Pokémon.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+            {
+                "TentativeName": "TrayIndex",
+                "Description": "The tray index in which to look for the given Pokémon.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+            {
+                "TentativeName": "Result",
+                "Description": "The work in which to put the result in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1239,
+        "Name": "_RELEASE_BOX_POKE",
+        "Description": "Releases the Pokémon at the given index and tray index.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Index",
+                "Description": "The index that points to the given Pokémon.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+            {
+                "TentativeName": "TrayIndex",
+                "Description": "The tray index in which to look for the given Pokémon.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1240,
+        "Name": "_TOGGLE_COLLISION_BOX",
+        "Description": "Toggles the collision box of a GameObject on the map",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Name",
+                "Description": "Name of the GameObject in String format.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+            {
+                "TentativeName": "ToggleValue",
+                "Description": "0 = off / 1 = on. Value to toggle the collision on or off accordingly.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1241,
+        "Name": "_INSTALL_CHECK",
+        "Description": "Sets provided work value to 69.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Name",
+                "Description": "Will return 69 if Exefs are properly installed.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1242,
+        "Name": "_SET_PLAYER_COLOR_INDEX",
+        "Description": "Sets the player's ColorVariation id.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Variation",
+                "Description": "The ColorVariation id to set the player to.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1243,
+        "Name": "_RIVAL_POKE_NO_GET",
+        "Description": "Returns the rival's starter selection. Possible values are 0, 1, and 2.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Result",
+                "Description": "The work in which to put the result in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1244,
+        "Name": "_SUPPORT_POKE_NO_GET",
+        "Description": "Returns the assistant's starter selection. Possible values are 0, 1, and 2.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Result",
+                "Description": "The work in which to put the result in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1245,
+        "Name": "_FIRST_MONSNO_FORMNO",
+        "Description": "Returns the player's starter's species id and form id.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Monsno",
+                "Description": "The work in which to put the monsno in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Formno",
+                "Description": "The work in which to put the formno in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1246,
+        "Name": "_RIVAL_MONSNO_FORMNO",
+        "Description": "Returns the rival's starter's species id and form id.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Monsno",
+                "Description": "The work in which to put the monsno in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Formno",
+                "Description": "The work in which to put the formno in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1247,
+        "Name": "_SUPPORT_MONSNO_FORMNO",
+        "Description": "Returns the assistant's starter's species id and form id.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Monsno",
+                "Description": "The work in which to put the monsno in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Formno",
+                "Description": "The work in which to put the formno in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1248,
+        "Name": "_CHANGE_FORMNO",
+        "Description": "Sets the form of the Pokémon at the given index and tray index.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Index",
+                "Description": "The index that points to the given Pokémon.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "TrayIndex",
+                "Description": "The tray index in which to look for the given Pokémon.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Formno",
+                "Description": "The form to set the Pokémon to.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1249,
+        "Name": "_GET_COSTUME_GENDER",
+        "Description": "Gets the gender of the given outfit index.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Index",
+                "Description": "The index of the outfit to check.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Result",
+                "Description": "The gender of the outfit, where 0 is masculine and 1 is feminine.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1250,
+        "Name": "_CASE_CALL",
+        "Description": "Compares the value of the variable given to the last _SWITCH command ran to another value, then calls a script if they are equal.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Value",
+                "Description": "Value to compare to.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Script",
+                "Description": "Script to call.",
+                "Type": [
+                    "Label"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1251,
+        "Name": "_ADD_POKEMON_UI_EXTRA",
+        "Description": "Gives a Pokémon to the Player.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Monsno",
+                "Description": "ID of the species to give.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Formno",
+                "Description": "ID of the form the species is in.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Level",
+                "Description": "Level of the Pokémon to give.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1249,
+        "Name": "_GET_COSTUME_GENDER",
+        "Description": "Gets the gender of the given outfit index.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Index",
+                "Description": "The index of the outfit to check.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Item",
+                "Description": "ID of the item the Pokémon is to hold.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "MaxIVs",
+                "Description": "Number of max IVs the Pokémon will have.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Ball",
+                "Description": "ID of the ball the Pokémon will reside in.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1252,
+        "Name": "_POKEMON_NAME_FORM",
+        "Description": "Inserts a string of the specified Pokémon's form name into the supplied tagIndex.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "TagIndex",
+                "Description": "The tagIndex where the string will be set into.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Monsno",
+                "Description": "ID of the species to look up.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Formno",
+                "Description": "ID of the form the species is in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1253,
+        "Name": "_SET_AYOU_NAME",
+        "Description": "Opens the keyboard to set the player's codename.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": []
+    },
+    {
+        "Id": 1254,
+        "Name": "_AYOU_NAME",
+        "Description": "Inserts a string of the player's codename into the supplied tagIndex.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "TagIndex",
+                "Description": "The tagIndex where the string will be set into.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    },
+    {
+        "Id": 1255,
+        "Name": "_GET_CAUGHT_LOCATION",
+        "Description": "Retrieves the place ID of the selected mons index.",
+        "Dummy": false,
+        "Animation": false,
+        "Args": [
+            {
+                "TentativeName": "Location",
+                "Description": "The work in which to put the location index in.",
+                "Type": [
+                    "Work"
+                ],
+                "Optional": false
+            },
+			{
+                "TentativeName": "Index",
+                "Description": "The index that points to the given Pokémon.",
+                "Type": [
+                    "Number",
+                    "Work"
+                ],
+                "Optional": false
+            }
+        ]
+    }
+]
