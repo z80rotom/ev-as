@@ -42,8 +42,8 @@ prog
    ;
 
 line
-   : define? comment?
-   | lbl? (instruction)? comment?
+   : define
+   | lbl
    ;
 
 instruction
@@ -51,7 +51,7 @@ instruction
    ;
 
 lbl
-   : name ':'
+   : name ':' instruction+
    ;
 
 define
@@ -94,10 +94,6 @@ name
 
 number
    : NUMBER
-   ;
-
-comment
-   : COMMENT
    ;
 
 NAME
