@@ -265,4 +265,10 @@ def main():
     print("Assembly finished")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+        print("Parsing finished")
+        input("Press Enter to Exit...")
+    except Exception as exc:
+        print(exc)
+        input("Press Enter to Exit...")
